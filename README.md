@@ -20,7 +20,7 @@ plugs:
     default-provider: lomiri-ui-toolkit-core24
 ```
 
-And export the following environment variables for your app to find it:
+Then, either use the included command-chain setup script from `command-chain/lomiri-launch` or export the following environment variables for your app to find it:
 
 ```
 export LD_LIBRARY_PATH=${SNAP}/usr/lib/${ARCH}:${SNAP}/lib/${ARCH}:${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}
