@@ -116,7 +116,7 @@ parts:
         - libharfbuzz0b
         - libicu74
         - libpcre2-16-0
-        - libpng16-16
+        - libpng16-16t64
         - libqt5core5t64
         - libqt5dbus5t64
         - libqt5network5t64
