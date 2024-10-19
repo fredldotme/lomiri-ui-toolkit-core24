@@ -96,7 +96,7 @@ parts:
         - fonts-ubuntu
         - yaru-theme-icon
         - libbluetooth3
-        - liblttng-ust1
+        - liblttng-ust1t64
         - libnuma1
         - liburcu8
         - libdouble-conversion3
@@ -168,3 +168,20 @@ parts:
     after: [ qt-setup ]
     source: snap/local
     plugin: dump
+
+  cleanup:
+    after: [ wrappers ]
+    plugin: nil
+    build-snaps: [ mesa-2404 ]
+    override-prime: |
+      set -eux
+      cd /snap/mesa-2404/current/usr/lib/${CRAFT_ARCH_TRIPLET}
+      find . -type f,l -exec rm -f $CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/{} \;
+      rm -fr "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/dri"
+      for CRUFT in bug drirc.d glvnd libdrm lintian man; do
+        rm -rf "$CRAFT_PRIME/usr/share/$CRUFT"
+      done
+      for CRUFT in libpulse-simple libucru; do
+        rm -rf "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/${CRUFT}*"
+      done
+
