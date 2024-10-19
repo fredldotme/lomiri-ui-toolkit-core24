@@ -14,7 +14,7 @@ description: |
 
   Want to start magic? Use Lomiri UI Toolkit! 😊
 
-  Lomiri is the continuation of the Unity8 effors by Canonical Ltd.
+  Lomiri by UBports is the continuation of the Unity8 effors by Canonical Ltd.
 compression: lzo
 grade: stable
 confinement: strict
@@ -88,11 +88,17 @@ parts:
         - qtpim5-dev
     stage-packages:
         - on armhf:
-            - to armhf: [ libqt5gui5-gles ]
+            - to armhf:
+                - libqt5gui5-gles
+                - libqt5quick5-gles
         - on arm64:
-            - to arm64: [ libqt5gui5-gles ]
+            - to arm64:
+                - libqt5gui5-gles
+                - libqt5quick5-gles
         - on amd64:
-            - to amd64: [ libqt5gui5 ]
+            - to amd64:
+                - libqt5gui5
+                - libqt5quick5
         - fonts-ubuntu
         - yaru-theme-icon
         - libbluetooth3
@@ -111,15 +117,14 @@ parts:
         - libicu74
         - libpcre2-16-0
         - libpng16-16
-        - libqt5core5at64
+        - libqt5core5t64
         - libqt5dbus5t64
         - libqt5network5t64
-        - libqt5qml5t64
-        - libqt5quick5t64
+        - libqt5qml5
         - libqt5test5t64
         - libqt5widgets5t64
-        - libqt5organizer5at64
-        - libqt5systeminfo5t64
+        - libqt5organizer5a
+        - libqt5systeminfo5
         - libx11-6
         - libxau6
         - libxcb1
@@ -138,6 +143,44 @@ parts:
         - libqt5quickcontrols2-5
         - libqt5quicktemplates2-5
 
+  content-hub:
+    plugin: cmake
+    source: https://gitlab.com/ubports/development/core/lomiri-content-hub.git
+    source-branch: main
+    cmake-parameters:
+        - -DCMAKE_INSTALL_PREFIX=/usr
+        - -DENABLE_TESTS=OFF
+        - -DENABLE_DOC=OFF
+        - -DENABLE_UBUNTU_COMPAT=ON
+    build-packages:
+        - cmake-extras
+        - doxygen
+        - graphviz
+        - libgtest-dev
+        - libapparmor-dev
+        - libdbus-1-dev
+        - libglib2.0-dev
+        - libgsettings-qt-dev
+        - liblomiri-api-dev
+        - libnotify-dev
+        - liblomiri-download-manager-client-dev
+        - liblomiri-app-launch-dev
+        - qml-module-lomiri-components
+        - qml-module-qtquick2
+        - qml-module-qttest
+        - qtbase5-dev
+        - qtdeclarative5-dev
+        - qtdeclarative5-dev-tools
+        - qttools5-dev-tools
+    stage-packages:
+        - liblomiri-app-launch0
+        - liblomiri-download-manager-client0t64
+        - liblomiri-download-manager-common0t64
+        - libgdk-pixbuf-2.0-0
+        - liblomiri-api0
+        - libnotify4
+    after: [ lomiri-ui-toolkit ]
+
   quickcontrolssuru:
     plugin: qmake
     source: https://gitlab.com/ubports/development/core/qqc2-suru-style.git
@@ -153,7 +196,7 @@ parts:
         - qtbase5-private-dev
         - qt5-qmake
         - pkg-kde-tools
-    after: [ lomiri-ui-toolkit ]
+    after: [ content-hub ]
 
   qt-setup:
     after: [ quickcontrolssuru ]
