@@ -104,7 +104,7 @@ parts:
         - libbluetooth3
         - liblttng-ust1t64
         - libnuma1
-        - liburcu8
+        - liburcu8t64
         - libdouble-conversion3
         - libegl1
         - libevdev2
