@@ -111,15 +111,15 @@ parts:
         - libicu74
         - libpcre2-16-0
         - libpng16-16
-        - libqt5core5a
-        - libqt5dbus5
-        - libqt5network5
-        - libqt5qml5
-        - libqt5quick5
-        - libqt5test5
-        - libqt5widgets5
-        - libqt5organizer5a
-        - libqt5systeminfo5
+        - libqt5core5at64
+        - libqt5dbus5t64
+        - libqt5network5t64
+        - libqt5qml5t64
+        - libqt5quick5t64
+        - libqt5test5t64
+        - libqt5widgets5t64
+        - libqt5organizer5at64
+        - libqt5systeminfo5t64
         - libx11-6
         - libxau6
         - libxcb1
@@ -181,7 +181,7 @@ parts:
       for CRUFT in bug drirc.d glvnd libdrm lintian man; do
         rm -rf "$CRAFT_PRIME/usr/share/$CRUFT"
       done
-      for CRUFT in libpulse-simple libucru; do
+      for CRUFT in libpulse-simple liburcu; do
         rm -rf "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/${CRUFT}*"
       done
 
