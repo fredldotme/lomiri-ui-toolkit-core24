@@ -156,6 +156,7 @@ parts:
         - cmake-extras
         - doxygen
         - graphviz
+        - gettext
         - libgtest-dev
         - libapparmor-dev
         - libdbus-1-dev
