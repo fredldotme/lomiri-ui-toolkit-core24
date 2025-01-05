@@ -29,4 +29,18 @@ export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt5/qml:${SN
 export XDG_DATA_DIRS=$XDG_DATA_DIRS:${SNAP}/usr/share:${SNAP}/lomiri-ui-toolkit/usr/share
 ```
 
+To instead use the `lomiri-launch` script, you might want to copy it from a build-snap into your space:
+
+snapcraft.yaml:
+
+```
+      build-snaps:
+        - lomiri-ui-toolkit-core24
+      override-prime: |
+        craftctl default
+        cp -a /snap/lomiri-ui-toolkit-core24/current/command-chain/lomiri-launch ${CRAFT_PRIME}/bin/lomiri-launch
+```
+
+## About Lomiri
+
 Lomiri is the continuation of the Unity8 efforts started by Canonical Ltd., maintained by the UBports community.
