@@ -33,7 +33,9 @@ if [ ! -z "$DESKTOP_FILE_HINT" ]; then
 fi
 
 export QT_QPA_PLATFORM=wayland-egl
-export LIBGL_DRIVERS_PATH=${SNAP}/graphics/dri
-export __EGL_VENDOR_LIBRARY_DIRS=/var/lib/snapd/lib/glvnd/egl_vendor.d:${SNAP}/lomiri-ui-toolkit/graphics/glvnd/egl_vendor.d:${__EGL_VENDOR_LIBRARY_DIRS}
+
+# Let gpu-2404 provide these variables
+#export LIBGL_DRIVERS_PATH=${SNAP}/graphics/dri
+#export __EGL_VENDOR_LIBRARY_DIRS=/var/lib/snapd/lib/glvnd/egl_vendor.d:${SNAP}/lomiri-ui-toolkit/graphics/glvnd/egl_vendor.d:${__EGL_VENDOR_LIBRARY_DIRS}
 
 exec "$@"
