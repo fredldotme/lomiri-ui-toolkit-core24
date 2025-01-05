@@ -41,6 +41,24 @@ snapcraft.yaml:
         cp -a /snap/lomiri-ui-toolkit-core24/current/command-chain/lomiri-launch ${CRAFT_PRIME}/bin/lomiri-launch
 ```
 
+Then use that command-chain script in your app:
+
+```
+apps:
+    testapp:
+        command-chain:
+            - bin/gpu-2404-wrapper
+            - bin/lomiri-launch
+            - bin/custom-envsetup
+        command: bin/testapp
+        plugs:
+            - home
+            - opengl
+            - unity7
+            - wayland
+
+```
+
 ## About Lomiri
 
 Lomiri is the continuation of the Unity8 efforts started by Canonical Ltd., maintained by the UBports community.
