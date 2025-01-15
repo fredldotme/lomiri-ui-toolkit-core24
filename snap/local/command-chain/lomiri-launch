@@ -34,6 +34,11 @@ fi
 
 export QT_QPA_PLATFORM=wayland-egl
 
+export LD_LIBRARY_PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}:${LD_LIBRARY_PATH}
+export QT_PLUGIN_PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
+export QML2_IMPORT_PATH=${SNAP}/lomiri-ui-toolkit/lib/${ARCH}:${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
+export XDG_DATA_DIRS=${SNAP}/lomiri-ui-toolkit/usr/share:${XDG_DATA_DIRS}
+
 # Let gpu-2404 provide these variables
 #export LIBGL_DRIVERS_PATH=${SNAP}/graphics/dri
 #export __EGL_VENDOR_LIBRARY_DIRS=/var/lib/snapd/lib/glvnd/egl_vendor.d:${SNAP}/lomiri-ui-toolkit/graphics/glvnd/egl_vendor.d:${__EGL_VENDOR_LIBRARY_DIRS}
