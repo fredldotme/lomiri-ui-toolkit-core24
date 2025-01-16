@@ -140,9 +140,13 @@ parts:
         - qml-module-qtquick2
         - qml-module-qtquick-controls2
         - qml-module-qtquick-templates2
+        - qml-module-qt-labs-settings
         - libqt5quickcontrols2-5
         - libqt5quicktemplates2-5
         - qtwayland5
+        - fonts-ubuntu
+        - fonts-dejavu
+        - xkb-data
 
   content-hub:
     plugin: cmake
