@@ -148,6 +148,51 @@ parts:
         - fonts-dejavu
         - xkb-data
 
+  download-manager:
+    plugin: cmake
+    source: https://gitlab.com/ubports/development/core/lomiri-download-manager.git
+    source-branch: main
+    cmake-parameters:
+        - -DCMAKE_INSTALL_PREFIX=/usr
+        - -DENABLE_DOC=OFF
+        - -DENABLE_UBUNTU_COMPAT=ON
+    build-packages:
+        - cmake-extras
+        - doxygen
+        - graphviz
+        - lcov
+        - gcovr
+        - gettext
+        - libgtest-dev
+        - libapparmor-dev
+        - libdbus-1-dev
+        - libglib2.0-dev
+        - libgsettings-qt-dev
+        - liblomiri-api-dev
+        - libnotify-dev
+        - libboost-dev
+        - libboost-log-dev
+        - libboost-program-options-dev
+        - libgoogle-glog-dev
+        - liblomiri-app-launch-dev
+        - qml-module-lomiri-components
+        - qml-module-qtquick2
+        - qml-module-qttest
+        - qtbase5-dev
+        - qtdeclarative5-dev
+        - qtdeclarative5-dev-tools
+        - qttools5-dev-tools
+    stage-packages:
+        - liblomiri-app-launch0
+        - libgoogle-glog0v6t64
+        - libboost-filesystem1.83.0
+        - libboost-log1.83.0
+        - libboost-thread1.83.0
+        - libgdk-pixbuf-2.0-0
+        - liblomiri-api0
+        - libnotify4
+    after: [ lomiri-ui-toolkit ]
+
   content-hub:
     plugin: cmake
     source: https://gitlab.com/ubports/development/core/lomiri-content-hub.git
@@ -169,7 +214,6 @@ parts:
         - libgsettings-qt-dev
         - liblomiri-api-dev
         - libnotify-dev
-        - liblomiri-download-manager-client-dev
         - liblomiri-app-launch-dev
         - qml-module-lomiri-components
         - qml-module-qtquick2
@@ -180,12 +224,11 @@ parts:
         - qttools5-dev-tools
     stage-packages:
         - liblomiri-app-launch0
-        - liblomiri-download-manager-client0t64
-        - liblomiri-download-manager-common0t64
         - libgdk-pixbuf-2.0-0
         - liblomiri-api0
+        - libgsettings-qt1
         - libnotify4
-    after: [ lomiri-ui-toolkit ]
+    after: [ download-manager ]
 
   quickcontrolssuru:
     plugin: qmake
