@@ -9,4 +9,4 @@ if ! snapctl is-connected lomiri-ui-toolkit; then
     exit 1
 fi
 
-exec "$SNAP/lomiri-ui-toolkit/bin/lomiri-launch-internal" "$@"
+exec "$SNAP/lomiri-ui-toolkit/command-chain/lomiri-launch-internal" "$@"
