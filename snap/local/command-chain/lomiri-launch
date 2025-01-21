@@ -1,68 +1,12 @@
 #!/bin/bash
 
-if [ ! -d "$XDG_RUNTIME_DIR" ]; then
-    mkdir -p "$XDG_RUNTIME_DIR"
+if ! snapctl is-connected lomiri-ui-toolkit; then
+    echo "The 'lomiri-ui-toolkit' is not connected to this Snap."
+    echo "Please run following command:"
+    echo ""
+    echo "sudo snap install lomiri-ui-toolkit-core24"
+    echo "sudo snap connect ${SNAP_INSTANCE_NAME}:lomiri-ui-toolkit lomiri-ui-toolkit-core24"
+    exit 1
 fi
 
-chmod 700 "$XDG_RUNTIME_DIR"
-
-# Wayland setup
-[ -z "$WAYLAND_DISPLAY" ] && WAYLAND_DISPLAY=wayland-0
-
-if [ ! -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
-    ln -sf "../$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
-fi
-
-if [ ! -d "$XDG_RUNTIME_DIR/pulse" ]; then
-    mkdir "$XDG_RUNTIME_DIR/pulse"
-fi
-
-if [ ! -e "$XDG_RUNTIME_DIR/pulse/native" ]; then
-    ln -sf "/run/user/$(id -u)/pulse/native" "$XDG_RUNTIME_DIR/pulse/native"
-fi
-
-if [ ! -e "$XDG_RUNTIME_DIR/pulse/pid" ]; then
-    ln -sf "/run/user/$(id -u)/pulse/pid" "$XDG_RUNTIME_DIR/pulse/pid"
-fi
-
-if [ "$QT_QPA_PLATFORM" = "ubuntumirclient" ]; then
-    export EGL_PLATFORM=wayland
-fi
-
-if [ "$QT_IM_MODULE" = "maliitphablet" ]; then
-    export QT_IM_MODULE=Maliit
-fi
-
-if [ ! -z "$DESKTOP_FILE_HINT" ]; then
-    export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-fi
-
-export QT_QPA_PLATFORM=wayland-egl
-
-if [ "$SNAP_ARCH" = "amd64" ]; then
-    ARCH="x86_64-linux-gnu"
-elif [ "$SNAP_ARCH" = "armhf" ]; then
-    ARCH="arm-linux-gnueabihf"
-elif [ "$SNAP_ARCH" = "arm64" ]; then
-    ARCH="aarch64-linux-gnu"
-elif [ "$SNAP_ARCH" = "ppc64el" ]; then
-    ARCH="powerpc64le-linux-gnu"
-else
-    ARCH="$SNAP_ARCH-linux-gnu"
-fi
-
-# Find libraries, Qt plugins, QML modules & fonts
-# Generously include expected paths from the main app since those are expected
-# by Clickable apps which this intends to support as well.
-export LD_LIBRARY_PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}:${LD_LIBRARY_PATH}
-export QT_PLUGIN_PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
-export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
-export XDG_DATA_DIRS=${SNAP}/lomiri-ui-toolkit/usr/share:${XDG_DATA_DIRS}
-export FONTCONFIG_PATH=${SNAP}/lomiri-ui-toolkit/etc/fonts
-export FONTCONFIG_FILE=${SNAP}/lomiri-ui-toolkit/etc/fonts/fonts.conf
-
-# Let gpu-2404 provide these variables
-#export LIBGL_DRIVERS_PATH=${SNAP}/graphics/dri
-#export __EGL_VENDOR_LIBRARY_DIRS=/var/lib/snapd/lib/glvnd/egl_vendor.d:${SNAP}/lomiri-ui-toolkit/graphics/glvnd/egl_vendor.d:${__EGL_VENDOR_LIBRARY_DIRS}
-
-exec "$@"
+exec "$SNAP/lomiri-ui-toolkit/bin/lomiri-launch-internal" "$@"
