@@ -49,6 +49,7 @@ parts:
     override-build: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/icons
       cp -a $SNAPCRAFT_PART_SRC/suru $SNAPCRAFT_PART_INSTALL/usr/share/icons/
+
   lomiri-ui-toolkit:
     plugin: qmake
     after: [ suru-icons ]
@@ -182,6 +183,8 @@ parts:
         - liblomiri-app-launch0
         - liblomiri-download-manager-client0t64
         - liblomiri-download-manager-common0t64
+        - liblomiri-download-manager-client-dev
+        - liblomiri-download-manager-common-dev
         - libgdk-pixbuf-2.0-0
         - liblomiri-api0
         - libnotify4
