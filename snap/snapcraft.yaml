@@ -49,6 +49,7 @@ parts:
     override-build: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/icons
       cp -a $SNAPCRAFT_PART_SRC/suru $SNAPCRAFT_PART_INSTALL/usr/share/icons/
+
   lomiri-ui-toolkit:
     plugin: qmake
     after: [ suru-icons ]
@@ -76,6 +77,7 @@ parts:
         - libxi-dev
         - qtbase5-private-dev
         - qtdeclarative5-private-dev
+        - qt5ct
         - qml-module-qtfeedback
         - qml-module-qtquick2
         - qml-module-qtquick-window2
@@ -185,7 +187,6 @@ parts:
         - qml-module-qtquick-controls
         - qml-module-qtsysteminfo
         - qml-module-qt-labs-calendar
-        - qml-module-qtquick-controls2
         - qml-module-qttest
         - qml-module-qt-labs-folderlistmodel
         - qml-module-qt-labs-location
@@ -210,6 +211,10 @@ parts:
         - libqt5multimedia5-plugins
         - libqt5multimediawidgets5
         - libqt5multimediagsttools5
+        - libqt5svg5
+        - libqt5xml5
+        - libqt5sql5
+        - libqt5sql5-sqlite
         - qtwayland5
         - fonts-ubuntu
         - fonts-dejavu
@@ -284,8 +289,6 @@ parts:
         - qtbase5-private-dev
         - qt5-qmake
         - pkg-kde-tools
-    stage-packages:
-        - qt5ct
     after: [ maliit ]
 
   qt-setup:
@@ -301,6 +304,8 @@ parts:
   wrappers:
     after: [ qt-setup ]
     source: snap/local
+    stage-packages:
+      - libicu74
     plugin: dump
 
   cleanup:
