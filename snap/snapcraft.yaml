@@ -212,8 +212,8 @@ parts:
         - libqt5multimediawidgets5
         - libqt5multimediagsttools5
         - libqt5svg5
-        - libqt5xml5
-        - libqt5sql5
+        - libqt5xml5t64
+        - libqt5sql5t64
         - libqt5sql5-sqlite
         - qtwayland5
         - fonts-ubuntu
