@@ -101,6 +101,9 @@ parts:
                 - libqt5quick5
         - fonts-ubuntu
         - yaru-theme-icon
+        - adwaita-icon-theme
+        - humanity-icon-theme
+        - hicolor-icon-theme
         - libbluetooth3
         - liblttng-ust1t64
         - libnuma1
@@ -255,18 +258,16 @@ parts:
   maliit:
     after: [ content-hub ]
     plugin: cmake
-    source: https://github.com/fredldotme/maliit-framework.git
-    source-branch: tide
+    source: https://github.com/maliit/framework.git
+    source-branch: master
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/usr
-      - -DCMAKE_PREFIX_PATH=${CRAFT_STAGE}/usr/lib/cmake/Qt6
       - -Denable-wayland=OFF
       - -Denable-glib=OFF
       - -Denable-tests=OFF
       - -Denable-docs=OFF
       - -Denable-xcb=OFF
       - -Denable-qt-inputcontext=ON
-      - -Dwith-qt6=OFF
 
   quickcontrolssuru:
     plugin: qmake
@@ -283,6 +284,8 @@ parts:
         - qtbase5-private-dev
         - qt5-qmake
         - pkg-kde-tools
+    stage-packages:
+        - qt5ct
     after: [ maliit ]
 
   qt-setup:
@@ -294,6 +297,7 @@ parts:
       make PLATFORM_PLUG=desktop DESTDIR=$SNAPCRAFT_PART_INSTALL install
     stage:
       - command-chain
+
   wrappers:
     after: [ qt-setup ]
     source: snap/local
