@@ -131,6 +131,10 @@ parts:
         - libxdmcp6
         - libxext6
         - libxi6
+        - libqt5webengine5
+        - libqt5webengine-data
+        - libqt5webenginecore5
+        - libqt5webenginewidgets5
         - qml-module-qtfeedback
         - qml-module-qtgraphicaleffects
         - qml-module-qtqml-models2
@@ -140,9 +144,69 @@ parts:
         - qml-module-qtquick2
         - qml-module-qtquick-controls2
         - qml-module-qtquick-templates2
+        - qml-module-qtwebengine
+        - qml-module-qtwebchannel
+        - qml-module-qtwebsockets
+        - qml-module-qtwebview
         - qml-module-qt-labs-settings
+        - qml-module-qt3d
+        - qml-module-qtmultimedia
+        - qml-module-qtquick-scene3d
+        - qml-module-qtaudioengine
+        - qml-module-qtnfc
+        - qml-module-qtquick-shapes
+        - qml-module-qtbluetooth
+        - qml-module-qtorganizer
+        - qml-module-qtquick-templates2
+        - qml-module-qtcharts
+        - qml-module-qtpositioning
+        - qml-module-qtcontacts
+        - qml-module-qtpublishsubscribe
+        - qml-module-qtquick-window2
+        - qml-module-qtdatavisualization
+        - qml-module-qtqml
+        - qml-module-qtquick-xmllistmodel
+        - qml-module-qtfeedback
+        - qml-module-qtqml-models2
+        - qml-module-qtremoteobjects
+        - qml-module-qtgamepad
+        - qml-module-qtqml-statemachine
+        - qml-module-qtscxml
+        - qml-module-qtgraphicaleffects
+        - qml-module-qtqml-workerscript2
+        - qml-module-qtsensors
+        - qml-module-qtgstreamer
+        - qml-module-qtquick2
+        - qml-module-qtserviceframework
+        - qml-module-qt-labs-animation
+        - qml-module-qtquick-controls
+        - qml-module-qtsysteminfo
+        - qml-module-qt-labs-calendar
+        - qml-module-qtquick-controls2
+        - qml-module-qttest
+        - qml-module-qt-labs-folderlistmodel
+        - qml-module-qt-labs-location
+        - qml-module-qtquick-dialogs
+        - qml-module-qt-labs-platform
+        - qml-module-qtquick-extras
+        - qml-module-qt-labs-qmlmodels
+        - qml-module-qtquick-layouts
+        - qml-module-qt-labs-settings
+        - qml-module-qtquick-localstorage
+        - qml-module-qt-labs-sharedimage
+        - qml-module-qtquick-particles2
+        - qml-module-qt-labs-wavefrontmesh
+        - qml-module-qtquick-pdf
+        - qml-module-qtlocation
+        - qml-module-qtquick-privatewidgets
+        - qml-module-qtquick-scene2d
         - libqt5quickcontrols2-5
         - libqt5quicktemplates2-5
+        - libqt5multimedia5
+        - libqt5multimediaquick5
+        - libqt5multimedia5-plugins
+        - libqt5multimediawidgets5
+        - libqt5multimediagsttools5
         - qtwayland5
         - fonts-ubuntu
         - fonts-dejavu
@@ -180,12 +244,29 @@ parts:
         - qttools5-dev-tools
     stage-packages:
         - liblomiri-app-launch0
+        - libgsettings-qt1
         - liblomiri-download-manager-client0t64
         - liblomiri-download-manager-common0t64
         - libgdk-pixbuf-2.0-0
         - liblomiri-api0
         - libnotify4
     after: [ lomiri-ui-toolkit ]
+
+  maliit:
+    after: [ content-hub ]
+    plugin: cmake
+    source: https://github.com/fredldotme/maliit-framework.git
+    source-branch: tide
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_PREFIX_PATH=${CRAFT_STAGE}/usr/lib/cmake/Qt6
+      - -Denable-wayland=OFF
+      - -Denable-glib=OFF
+      - -Denable-tests=OFF
+      - -Denable-docs=OFF
+      - -Denable-xcb=OFF
+      - -Denable-qt-inputcontext=ON
+      - -Dwith-qt6=OFF
 
   quickcontrolssuru:
     plugin: qmake
@@ -202,7 +283,7 @@ parts:
         - qtbase5-private-dev
         - qt5-qmake
         - pkg-kde-tools
-    after: [ content-hub ]
+    after: [ maliit ]
 
   qt-setup:
     after: [ quickcontrolssuru ]
