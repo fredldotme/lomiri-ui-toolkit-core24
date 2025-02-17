@@ -25,10 +25,6 @@ if [ ! -e "$XDG_RUNTIME_DIR/pulse/pid" ]; then
     ln -sf "/run/user/$(id -u)/pulse/pid" "$XDG_RUNTIME_DIR/pulse/pid"
 fi
 
-if [ "$QT_QPA_PLATFORM" = "ubuntumirclient" ]; then
-    export EGL_PLATFORM=wayland
-fi
-
 if [ "$QT_IM_MODULE" = "maliitphablet" ]; then
     export QT_IM_MODULE=Maliit
 fi
@@ -37,7 +33,12 @@ if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 fi
 
-export QT_QPA_PLATFORM=wayland-egl
+# Enforce use of Wayland if the socket is around
+if [ -e "/run/user/$(id -u)/$WAYLAND_DISPLAY" ]; then
+    export QT_QPA_PLATFORM=wayland-egl
+    export HYBRIS_EGLPLATFORM=wayland
+fi
+
 
 if [ "$SNAP_ARCH" = "amd64" ]; then
     ARCH="x86_64-linux-gnu"
@@ -64,6 +65,8 @@ export FONTCONFIG_PATH=${SNAP}/lomiri-ui-toolkit/etc/fonts
 export FONTCONFIG_FILE=${SNAP}/lomiri-ui-toolkit/etc/fonts/fonts.conf
 export QT_QPA_PLATFORMTHEME=qt5ct:qt6ct
 export QT_QUICK_CONTROLS_STYLE=Suru
+
+export QTWEBENGINEPROCESS_PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
 
 # Let gpu-2404 provide these variables
 #export LIBGL_DRIVERS_PATH=${SNAP}/graphics/dri
