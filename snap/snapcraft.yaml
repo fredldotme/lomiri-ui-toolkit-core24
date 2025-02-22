@@ -219,6 +219,9 @@ parts:
         - fonts-ubuntu
         - fonts-dejavu
         - xkb-data
+        - gstreamer1.0-plugins-good
+        - gstreamer1.0-plugins-bad
+        - gstreamer1.0-plugins-ugly
 
   content-hub:
     plugin: cmake
