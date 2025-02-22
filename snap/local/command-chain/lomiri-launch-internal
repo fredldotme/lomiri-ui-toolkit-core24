@@ -75,6 +75,13 @@ export QT_QUICK_CONTROLS_STYLE=Suru
 export QTWEBENGINE_DISABLE_SANDBOX=1
 export QTWEBENGINEPROCESS_PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
 
+# Tell GStreamer where to find its plugins
+# Source: https://github.com/canonical/snapcraft/blob/main/extensions/desktop/common/desktop-exports
+export GST_PLUGIN_PATH=${SNAP}/usr/lib/${ARCH}/gstreamer-1.0
+export GST_PLUGIN_SYSTEM_PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/gstreamer-1.0
+# gst plugin scanner doesn't install in the correct path: https://github.com/ubuntu/snapcraft-desktop-helpers/issues/43
+export GST_PLUGIN_SCANNER=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner
+
 # Let gpu-2404 provide these variables
 #export LIBGL_DRIVERS_PATH=${SNAP}/graphics/dri
 #export __EGL_VENDOR_LIBRARY_DIRS=/var/lib/snapd/lib/glvnd/egl_vendor.d:${SNAP}/lomiri-ui-toolkit/graphics/glvnd/egl_vendor.d:${__EGL_VENDOR_LIBRARY_DIRS}
