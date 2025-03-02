@@ -14,7 +14,7 @@ description: |
 
   Want to start magic? Use Lomiri UI Toolkit! 😊
 
-  Lomiri by UBports is the continuation of the Unity8 effors by Canonical Ltd.
+  Lomiri by UBports is the continuation of the Unity8 efforts by Canonical Ltd.
 compression: lzo
 grade: stable
 confinement: strict
