@@ -35,12 +35,6 @@ slots:
     read:
       - $SNAP
 
-plugs:
-  gpu-2404:
-    interface: content
-    target: $SNAP/gpu-2404
-    default-provider: mesa-2404
-
 parts:
   suru-icons:
     plugin: nil
@@ -101,7 +95,6 @@ parts:
             - to amd64:
                 - libqt5gui5
                 - libqt5quick5
-        - fonts-ubuntu
         - yaru-theme-icon
         - adwaita-icon-theme
         - humanity-icon-theme
@@ -218,6 +211,7 @@ parts:
         - qtwayland5
         - fonts-ubuntu
         - fonts-dejavu
+        - fonts-emojione
         - xkb-data
         - gstreamer1.0-plugins-good
         - gstreamer1.0-plugins-bad
@@ -294,25 +288,13 @@ parts:
         - pkg-kde-tools
     after: [ maliit ]
 
-  qt-setup:
+  misc:
     after: [ quickcontrolssuru ]
-    source: https://github.com/snapcore/snapcraft-desktop-integration.git
-    plugin: nil
-    override-build: |
-      cd qt-framework
-      make PLATFORM_PLUG=desktop DESTDIR=$SNAPCRAFT_PART_INSTALL install
-    stage:
-      - command-chain
-
-  wrappers:
-    after: [ qt-setup ]
-    source: snap/local
-    stage-packages:
-      - libicu74
+    source: misc
     plugin: dump
 
   cleanup:
-    after: [ wrappers ]
+    after: [ misc ]
     plugin: nil
     build-snaps: [ mesa-2404 ]
     override-prime: |

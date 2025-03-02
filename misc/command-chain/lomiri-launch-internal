@@ -1,0 +1,167 @@
+#!/bin/bash
+
+# We're here
+SNAP_DESKTOP_RUNTIME=${SNAP}/lomiri-ui-toolkit
+
+USER_CACHE_FOLDER="$SNAP_USER_COMMON/.cache"
+RUNTIME_LAST_DATE="$USER_CACHE_FOLDER/desktop-runtime-date"
+needs_update=false
+
+if [ ! -f "$RUNTIME_LAST_DATE" -o \
+       "$SNAP_DESKTOP_RUNTIME" -nt "$RUNTIME_LAST_DATE" -o \
+       "$SNAP_DESKTOP_RUNTIME" -ot "$RUNTIME_LAST_DATE" ]; then
+  needs_update=true
+  mkdir -p "$USER_CACHE_FOLDER"
+  touch -r "$SNAP_DESKTOP_RUNTIME" "$RUNTIME_LAST_DATE"
+fi
+
+# From Snapcraft's desktop-launch
+declare -A PIDS
+function async_exec() {
+  "$@" &
+  PIDS[$!]=$*
+}
+function wait_for_async_execs() {
+  for pid in "${!PIDS[@]}"
+  do
+    wait "$pid" && continue || echo "ERROR: ${PIDS[$pid]} exited abnormally with status $?"
+  done
+}
+function ensure_dir_exists() {
+  [ -d "$1" ] ||  mkdir -p "$@"
+}
+
+if [ ! -d "$XDG_RUNTIME_DIR" ]; then
+    mkdir -p "$XDG_RUNTIME_DIR"
+fi
+
+chmod 700 "$XDG_RUNTIME_DIR"
+
+# Wayland setup
+[ -z "$WAYLAND_DISPLAY" ] && WAYLAND_DISPLAY=wayland-0
+
+if [ ! -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
+    ln -sf "../$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
+fi
+
+if [ ! -d "$XDG_RUNTIME_DIR/pulse" ]; then
+    mkdir "$XDG_RUNTIME_DIR/pulse"
+fi
+
+if [ ! -e "$XDG_RUNTIME_DIR/pulse/native" ]; then
+    ln -sf "/run/user/$(id -u)/pulse/native" "$XDG_RUNTIME_DIR/pulse/native"
+fi
+
+if [ ! -e "$XDG_RUNTIME_DIR/pulse/pid" ]; then
+    ln -sf "/run/user/$(id -u)/pulse/pid" "$XDG_RUNTIME_DIR/pulse/pid"
+fi
+
+if [ "$QT_IM_MODULE" = "maliitphablet" ]; then
+    export QT_IM_MODULE=Maliit
+fi
+
+if [ ! -z "$DESKTOP_FILE_HINT" ]; then
+    export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+fi
+
+# Enforce use of Wayland if the socket is around
+if [ -e "/run/user/$(id -u)/$WAYLAND_DISPLAY" ]; then
+    export QT_QPA_PLATFORM=wayland-egl
+    export HYBRIS_EGLPLATFORM=wayland
+fi
+
+
+if [ "$SNAP_ARCH" = "amd64" ]; then
+    ARCH="x86_64-linux-gnu"
+elif [ "$SNAP_ARCH" = "armhf" ]; then
+    ARCH="arm-linux-gnueabihf"
+elif [ "$SNAP_ARCH" = "arm64" ]; then
+    ARCH="aarch64-linux-gnu"
+elif [ "$SNAP_ARCH" = "ppc64el" ]; then
+    ARCH="powerpc64le-linux-gnu"
+else
+    ARCH="$SNAP_ARCH-linux-gnu"
+fi
+
+# Find libraries, Qt plugins, QML modules, fonts & icons
+# Generously include expected paths from the main app since those are expected
+# by Clickable apps which this intends to support as well.
+export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/pulseaudio:${LD_LIBRARY_PATH}
+
+export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
+export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
+export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
+export FONTCONFIG_PATH=${SNAP_DESKTOP_RUNTIME}/etc/fonts
+export FONTCONFIG_FILE=${SNAP_DESKTOP_RUNTIME}/etc/fonts/fonts.conf
+export QT_QPA_PLATFORMTHEME=qt5ct:qt6ct
+export QT_QUICK_CONTROLS_STYLE=Suru
+
+# Make Qt find QtWebEngine and disable its own sandbox.
+# QtWebEngine also requires an additional layout like:
+#
+# layout:
+#   /usr/share/qt5:
+#     bind: $SNAP/lomiri-ui-toolkit/usr/share/qt5
+export QTWEBENGINE_DISABLE_SANDBOX=1
+export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
+
+# Tell GStreamer where to find its plugins
+# Source: https://github.com/canonical/snapcraft/blob/main/extensions/desktop/common/desktop-exports
+export GST_PLUGIN_PATH=${SNAP}/usr/lib/${ARCH}/gstreamer-1.0
+export GST_PLUGIN_SYSTEM_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/gstreamer-1.0
+# gst plugin scanner doesn't install in the correct path: https://github.com/ubuntu/snapcraft-desktop-helpers/issues/43
+export GST_PLUGIN_SCANNER=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner
+
+# From Snapcraft's desktop-launch
+function make_user_fontconfig {
+  echo "<fontconfig>"
+  if [ -d "$SNAP_REAL_HOME/.local/share/fonts" ]; then
+    echo "  <dir>$SNAP_REAL_HOME/.local/share/fonts</dir>"
+  fi
+  if [ -d "$SNAP_REAL_HOME/.fonts" ]; then
+    echo "  <dir>$SNAP_REAL_HOME/.fonts</dir>"
+  fi
+  for ((i = 0; i < ${#data_dirs_array[@]}; i++)); do
+    if [ -d "${data_dirs_array[$i]}/fonts" ]; then
+      echo "  <dir>${data_dirs_array[$i]}/fonts</dir>"
+    fi
+  done
+  # The purpose of this directory is to make certain fontconfig files available
+  # to the snap environment by default. Right now it helps the transition to Noto
+  # as default font become effective in snaps used in 23.10 and 24.04 before the
+  # base snap is core24.
+  echo '  <include ignore_missing="yes">/etc/fonts/snap-override</include>'
+  # In accordance with the discussion at https://bugs.launchpad.net/bugs/2025651
+  # we don't load files from /etc/fonts/conf.d at this time.
+  echo '  <include ignore_missing="yes">conf.d</include>'
+  # We need to include a user-writable cachedir first to support
+  # caching of per-user fonts.
+  echo '  <cachedir prefix="xdg">fontconfig</cachedir>'
+  echo "  <cachedir>$SNAP_COMMON/fontconfig</cachedir>"
+  echo "</fontconfig>"
+}
+
+if [ "$needs_update" = true ]; then
+  rm -rf "$XDG_DATA_HOME"/{fontconfig,fonts,fonts-*,themes,.themes}
+
+  # This fontconfig fragment is installed in a location that is
+  # included by the system fontconfig configuration: namely the
+  # etc/fonts/conf.d/50-user.conf file.
+  ensure_dir_exists "$XDG_CONFIG_HOME/fontconfig"
+  async_exec make_user_fontconfig > "$XDG_CONFIG_HOME/fontconfig/fonts.conf"
+
+  # the themes symlink are needed for GTK 3.18 when the prefix isn't changed
+  # GTK 3.20 looks into XDG_DATA_DIRS which has connected themes.
+  if [ -d "$SNAP/data-dir/themes" ]; then
+    ln -sf "$SNAP/data-dir/themes" "$XDG_DATA_HOME"
+    ln -sfn "$SNAP/data-dir/themes" "$SNAP_USER_DATA/.themes"
+  elif [ -d "$SNAP_DESKTOP_RUNTIME/usr/share/themes" ]; then
+    ln -sf "$SNAP_DESKTOP_RUNTIME/usr/share/themes" "$XDG_DATA_HOME"
+    ln -sfn "$SNAP_DESKTOP_RUNTIME/usr/share/themes" "$SNAP_USER_DATA/.themes"
+  fi
+fi
+
+wait_for_async_execs
+
+exec "$@"
