@@ -3,34 +3,6 @@
 # We're here
 SNAP_DESKTOP_RUNTIME=${SNAP}/lomiri-ui-toolkit
 
-USER_CACHE_FOLDER="$SNAP_USER_COMMON/.cache"
-RUNTIME_LAST_DATE="$USER_CACHE_FOLDER/desktop-runtime-date"
-needs_update=false
-
-if [ ! -f "$RUNTIME_LAST_DATE" -o \
-       "$SNAP_DESKTOP_RUNTIME" -nt "$RUNTIME_LAST_DATE" -o \
-       "$SNAP_DESKTOP_RUNTIME" -ot "$RUNTIME_LAST_DATE" ]; then
-  needs_update=true
-  mkdir -p "$USER_CACHE_FOLDER"
-  touch -r "$SNAP_DESKTOP_RUNTIME" "$RUNTIME_LAST_DATE"
-fi
-
-# From Snapcraft's desktop-launch
-declare -A PIDS
-function async_exec() {
-  "$@" &
-  PIDS[$!]=$*
-}
-function wait_for_async_execs() {
-  for pid in "${!PIDS[@]}"
-  do
-    wait "$pid" && continue || echo "ERROR: ${PIDS[$pid]} exited abnormally with status $?"
-  done
-}
-function ensure_dir_exists() {
-  [ -d "$1" ] ||  mkdir -p "$@"
-}
-
 if [ ! -d "$XDG_RUNTIME_DIR" ]; then
     mkdir -p "$XDG_RUNTIME_DIR"
 fi
@@ -92,8 +64,8 @@ export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/pulseaudio:${LD_L
 export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
 export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
 export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
-export FONTCONFIG_PATH=${SNAP_DESKTOP_RUNTIME}/etc/fonts
-export FONTCONFIG_FILE=${SNAP_DESKTOP_RUNTIME}/etc/fonts/fonts.conf
+#export FONTCONFIG_PATH=${SNAP_DESKTOP_RUNTIME}/etc/fonts
+#export FONTCONFIG_FILE=${SNAP_DESKTOP_RUNTIME}/etc/fonts/fonts.conf
 export QT_QPA_PLATFORMTHEME=qt5ct:qt6ct
 export QT_QUICK_CONTROLS_STYLE=Suru
 
@@ -113,7 +85,62 @@ export GST_PLUGIN_SYSTEM_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/gstreamer-
 # gst plugin scanner doesn't install in the correct path: https://github.com/ubuntu/snapcraft-desktop-helpers/issues/43
 export GST_PLUGIN_SCANNER=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner
 
-# From Snapcraft's desktop-launch
+# Font Config and themes
+export FONTCONFIG_PATH="$SNAP_DESKTOP_RUNTIME/etc/fonts"
+export FONTCONFIG_FILE="$SNAP_DESKTOP_RUNTIME/etc/fonts/fonts.conf"
+
+# shellcheck source=/dev/null
+source "$SNAP_USER_DATA/.last_revision" 2>/dev/null || true
+if [ "$SNAP_DESKTOP_LAST_REVISION" = "$SNAP_REVISION" ]; then
+  needs_update=false
+else
+  needs_update=true
+fi
+
+# ensure_dir_exists calls `mkdir -p` if the given path is not a directory.
+# This speeds up execution time by avoiding unnecessary calls to mkdir.
+#
+# Usage: ensure_dir_exists <path> [<mkdir-options>]...
+#
+function ensure_dir_exists() {
+  [ -d "$1" ] ||  mkdir -p "$@"
+}
+
+declare -A PIDS
+function async_exec() {
+  "$@" &
+  PIDS[$!]=$*
+}
+function wait_for_async_execs() {
+  for pid in "${!PIDS[@]}"
+  do
+    wait "$pid" && continue || echo "ERROR: ${PIDS[$pid]} exited abnormally with status $?"
+  done
+}
+
+# Set $REALHOME to the users real home directory
+REALHOME=$(getent passwd $UID | cut -d ':' -f 6)
+
+# Set config folder to local path
+export XDG_CONFIG_HOME="$SNAP_USER_DATA/.config"
+ensure_dir_exists "$XDG_CONFIG_HOME"
+chmod 700 "$XDG_CONFIG_HOME"
+
+# If there is no user user-dirs, don't check for the checksum
+if [[ -f "$REALHOME/.config/user-dirs.dirs" ]]; then
+  # If the user has modified their user-dirs settings, force an update
+  if [[ -f "$XDG_CONFIG_HOME/user-dirs.dirs.md5sum" ]]; then
+    if [[ "$(md5sum < "$REALHOME/.config/user-dirs.dirs")" != "$(cat "$XDG_CONFIG_HOME/user-dirs.dirs.md5sum")" ||
+          ( -f "$XDG_CONFIG_HOME/user-dirs.locale.md5sum" &&
+            "$(md5sum < "$REALHOME/.config/user-dirs.locale")" != "$(cat "$XDG_CONFIG_HOME/user-dirs.locale.md5sum")" ) ]]; then
+      needs_update=true
+    fi
+  else
+    # shellcheck disable=SC2034
+    needs_update=true
+  fi
+fi
+
 function make_user_fontconfig {
   echo "<fontconfig>"
   if [ -d "$SNAP_REAL_HOME/.local/share/fonts" ]; then
@@ -159,6 +186,18 @@ if [ "$needs_update" = true ]; then
   elif [ -d "$SNAP_DESKTOP_RUNTIME/usr/share/themes" ]; then
     ln -sf "$SNAP_DESKTOP_RUNTIME/usr/share/themes" "$XDG_DATA_HOME"
     ln -sfn "$SNAP_DESKTOP_RUNTIME/usr/share/themes" "$SNAP_USER_DATA/.themes"
+  fi
+fi
+
+# Build mime.cache
+# needed for gtk and qt icon
+if [ "$needs_update" = true ]; then
+  rm -rf "$XDG_DATA_HOME/mime"
+  if [ ! -f "$SNAP_DESKTOP_RUNTIME/usr/share/mime/mime.cache" ]; then
+    if command -v update-mime-database >/dev/null; then
+      cp --preserve=timestamps -dR "$SNAP_DESKTOP_RUNTIME/usr/share/mime" "$XDG_DATA_HOME"
+      async_exec update-mime-database "$XDG_DATA_HOME/mime"
+    fi
   fi
 fi
 
