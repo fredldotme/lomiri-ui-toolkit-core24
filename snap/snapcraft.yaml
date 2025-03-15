@@ -20,6 +20,10 @@ grade: stable
 confinement: strict
 base: core24
 
+lint:
+  ignore:
+    - library
+
 platforms:
   amd64:
     build-on: amd64
@@ -212,6 +216,7 @@ parts:
         - fonts-ubuntu
         - fonts-dejavu
         - fonts-emojione
+        - fonts-noto-color-emoji
         - xkb-data
         - gstreamer1.0-plugins-good
         - gstreamer1.0-plugins-bad
@@ -288,14 +293,25 @@ parts:
         - pkg-kde-tools
     after: [ maliit ]
 
+  qt-setup:
+    source: https://invent.kde.org/neon/snap-packaging/snapcraft-desktop-integration.git
+    source-type: git
+    source-subdir: kde-neon
+    plugin: make
+    make-parameters:
+      - PLATFORM_PLUG=lomiri-ui-toolkit
+    stage-packages:
+      - tox
+
   misc:
-    after: [ quickcontrolssuru ]
+    after: [ qt-setup ]
     source: misc
     plugin: dump
 
   cleanup:
     after: [ misc ]
     plugin: nil
+    build-packages: [ execstack ]
     build-snaps: [ mesa-2404 ]
     override-prime: |
       set -eux
@@ -308,4 +324,7 @@ parts:
       for CRUFT in libpulse-simple liburcu; do
         rm -rf "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/${CRUFT}*"
       done
-
+      find "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}" -type f -exec execstack --clear-execstack {} \;
+      if [ -f "$CRAFT_PRIME/etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf" ]; then
+        rm -f "$CRAFT_PRIME/etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf"
+      fi
