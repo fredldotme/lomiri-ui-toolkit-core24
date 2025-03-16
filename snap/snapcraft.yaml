@@ -309,7 +309,14 @@ parts:
     plugin: dump
 
   cleanup:
-    after: [ misc ]
+    after:
+      - suru-icons
+      - lomiri-ui-toolkit
+      - content-hub
+      - quickcontrolssuru
+      - maliit
+      - qt-setup
+      - misc
     plugin: nil
     build-packages: [ execstack ]
     build-snaps: [ mesa-2404 ]
