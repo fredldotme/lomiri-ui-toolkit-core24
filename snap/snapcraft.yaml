@@ -345,6 +345,8 @@ parts:
   misc:
     after: [ qt-setup ]
     source: misc
+      - libicu74
+      - qmlscene
     plugin: dump
 
   cleanup:
