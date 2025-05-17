@@ -69,34 +69,34 @@ parts:
       craftctl default
 
       # Avoid conflicts with qt5gl
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/libQt5EglFSDeviceIntegration.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/libQt5EglFsKmsSupport.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/libQt5Gui.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/libQt5Quick.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/libQt5XcbQpa.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/egldeviceintegrations/libqeglfs-emu-integration.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/egldeviceintegrations/libqeglfs-kms-egldevice-integration.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/egldeviceintegrations/libqeglfs-kms-integration.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/egldeviceintegrations/libqeglfs-x11-integration.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/generic/libqevdevkeyboardplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/generic/libqevdevmouseplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/generic/libqevdevtabletplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/generic/libqevdevtouchplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/generic/libqlibinputplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/generic/libqtuiotouchplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqgif.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqico.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/imageformats/libqjpeg.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqeglfs.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqlinuxfb.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqminimal.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqminimalegl.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqoffscreen.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqvnc.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/platforms/libqxcb.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/aarch64-linux-gnu/qt5/plugins/xcbglintegrations/libqxcb-egl-integration.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5EglFSDeviceIntegration.so*
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5EglFsKmsSupport.so*
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5Gui.so*
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5Quick.so*
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5XcbQpa.so*
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-emu-integration.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-kms-egldevice-integration.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-kms-integration.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-x11-integration.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevkeyboardplugin.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevmouseplugin.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevtabletplugin.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevtouchplugin.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqlibinputplugin.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqtuiotouchplugin.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqgif.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqico.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqjpeg.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqeglfs.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqlinuxfb.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqminimal.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqminimalegl.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqoffscreen.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqvnc.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqxcb.so
+      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/xcbglintegrations/libqxcb-egl-integration.so
 
     build-packages:
         - dbus
