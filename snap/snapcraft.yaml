@@ -345,6 +345,7 @@ parts:
   misc:
     after: [ qt-setup ]
     source: misc
+    stage-packages:
       - libicu74
       - qmlscene
     plugin: dump
