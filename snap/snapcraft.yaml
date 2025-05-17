@@ -121,6 +121,7 @@ parts:
         - qtsystems5-private-dev
         - qtpim5-dev
     stage-packages:
+        - qmlscene
         - yaru-theme-icon
         - adwaita-icon-theme
         - humanity-icon-theme
@@ -347,7 +348,6 @@ parts:
     source: misc
     stage-packages:
       - libicu74
-      - qmlscene
     plugin: dump
 
   cleanup:
