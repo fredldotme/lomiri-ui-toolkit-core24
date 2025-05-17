@@ -55,14 +55,14 @@ else
     ARCH="$SNAP_ARCH-linux-gnu"
 fi
 
-# Find libraries, Qt plugins, QML modules, fonts & icons
+# Find libraries, Qt plugins, QML modules, programs, fonts & icons
 # Generously include expected paths from the main app since those are expected
 # by Clickable apps which this intends to support as well.
+export PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/qt5/bin:${PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/pulseaudio:${LD_LIBRARY_PATH}
-
 export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
-export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
+export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt5/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
 export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
 #export FONTCONFIG_PATH=${SNAP_DESKTOP_RUNTIME}/etc/fonts
 #export FONTCONFIG_FILE=${SNAP_DESKTOP_RUNTIME}/etc/fonts/fonts.conf
