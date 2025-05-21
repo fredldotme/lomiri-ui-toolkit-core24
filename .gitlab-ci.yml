@@ -32,7 +32,7 @@ snap:
   - |
     unlink /snap/snapcraft/current/usr/bin/python3
     ln -s /snap/snapcraft/current/usr/bin/python3.* /snap/snapcraft/current/usr/bin/python3
-    echo /snap/snapcraft/current/lib/python3.*/site-packages >> /snap/snapcraft/current/usr/lib/python3/dist-packages/site-packages.pth
+    # echo /snap/snapcraft/current/lib/python3.*/site-packages >> /snap/snapcraft/current/usr/lib/python3/dist-packages/site-packages.pth
 
 # Create a snapcraft runner (TODO: move version detection to the core of
 # snapcraft).
