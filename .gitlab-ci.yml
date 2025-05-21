@@ -1,8 +1,8 @@
 snap:
   script:
   - PROJECT=lomiri-ui-toolkit-core24
-  - sudo apt update && apt install -y snapd git
-  - sudo snap install --classic snapcraft
+  - apt update && apt install -y snapd git
+  - snap install --classic snapcraft
   - mkdir -p ~/.local/share/snapcraft/provider/launchpad
   - echo -en "[1]\n" > ~/.local/share/snapcraft/provider/launchpad/credentials
   - echo -en "consumer_key = System-wide" >> ~/.local/share/snapcraft/provider/launchpad/credentials
