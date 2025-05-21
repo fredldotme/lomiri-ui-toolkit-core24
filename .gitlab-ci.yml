@@ -6,6 +6,8 @@ snap:
   - PROJECT=lomiri-ui-toolkit-core24
   - apt update && apt install -y git curl jq squashfs-tools python3
 
+  - export SNAP="/snap/snapcraft/current"
+
 # Grab the core snap (for backwards compatibility) from the stable channel and
 # unpack it in the proper place.
   - |
@@ -42,7 +44,7 @@ snap:
   - echo 'exec "$SNAP/usr/bin/python3" "$SNAP/bin/snapcraft" "$@"' >> /snap/bin/snapcraft
   - chmod +x /snap/bin/snapcraft
 
-  - export PATH=/snap/bin:$PATH
+  - export PATH=/snap/bin:/snap/snapcraft/current/usr/bin:$PATH
   - mkdir -p ~/.local/share/snapcraft/provider/launchpad
   - echo -en "[1]\n" > ~/.local/share/snapcraft/provider/launchpad/credentials
   - echo -en "consumer_key = System-wide" >> ~/.local/share/snapcraft/provider/launchpad/credentials
