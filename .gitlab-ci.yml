@@ -1,44 +1,8 @@
-image: ubuntu:24.04
+image: registry.gitlab.com/remmina/remmina/ubuntu:22.04
 
 snap:
   tags: [ubports]
   script:
-  - apt update && apt install -y git curl jq squashfs-tools
-
-# Grab the core snap (for backwards compatibility) from the stable channel and
-# unpack it in the proper place.
-  - |
-    curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core' | jq '.download_url' -r) --output core.snap
-    mkdir -p /snap/core
-    unsquashfs -d /snap/core/current core.snap
-
-# Grab the core24 snap (which snapcraft uses as a base) from the stable channel
-# and unpack it in the proper place.
-  - |
-    curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core24' | jq '.download_url' -r) --output core24.snap
-    mkdir -p /snap/core24
-    unsquashfs -d /snap/core24/current core24.snap
-
-# Grab the snapcraft snap from the $RISK channel and unpack it in the proper
-# place.
-  - |
-    curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/snapcraft?channel=stable' | jq '.download_url' -r) --output snapcraft.snap
-    mkdir -p /snap/snapcraft
-    unsquashfs -d /snap/snapcraft/current snapcraft.snap
-
-# Create a snapcraft runner (TODO: move version detection to the core of
-# snapcraft).
-  - mkdir -p /snap/bin
-  - echo "#!/bin/sh" > /snap/bin/snapcraft
-  - snap_version="$(awk '/^version:/{print $2}' /snap/snapcraft/current/meta/snap.yaml | tr -d \')" && echo "export SNAP_VERSION=\"$snap_version\"" >> /snap/bin/snapcraft
-  - echo 'export PYTHONPATH=/snap/snapcraft/current/lib/python3.12:/snap/snapcraft/current/usr/lib/python3.12:/snap/snapcraft/current/lib/python3.12/site-packages' >> /snap/bin/snapcraft
-  - echo 'export SNAP_NAME=snapcraft' >> /snap/bin/snapcraft
-  - echo 'export SNAP_INSTANCE_NAME=snapcraft' >> /snap/bin/snapcraft
-  - echo 'export SNAP=/snap/snapcraft/current' >> /snap/bin/snapcraft
-  - echo 'exec "/snap/core24/current/usr/bin/python3" "/snap/snapcraft/current/bin/snapcraft" "$@"' >> /snap/bin/snapcraft
-  - chmod +x /snap/bin/snapcraft
-
-  - export PATH=/snap/bin:/snap/snapcraft/current/usr/bin:$PATH
   - mkdir -p ~/.local/share/snapcraft/provider/launchpad
   - echo -en "[1]\n" > ~/.local/share/snapcraft/provider/launchpad/credentials
   - echo -en "consumer_key = System-wide" >> ~/.local/share/snapcraft/provider/launchpad/credentials
