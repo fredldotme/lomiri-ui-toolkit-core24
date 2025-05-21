@@ -1,7 +1,6 @@
-image: registry.gitlab.com/remmina/remmina/ubuntu:22.04
-
 snap:
   tags: [ubports]
+  image: registry.gitlab.com/remmina/remmina/snap:22.04
   script:
   - mkdir -p ~/.local/share/snapcraft/provider/launchpad
   - echo -en "[1]\n" > ~/.local/share/snapcraft/provider/launchpad/credentials
