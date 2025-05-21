@@ -1,3 +1,5 @@
+image: ubuntu:24.04
+
 snap:
   script:
   - PROJECT=lomiri-ui-toolkit-core24
