@@ -6,7 +6,7 @@ snap:
   - PROJECT=lomiri-ui-toolkit-core24
   - apt update && apt install -y git curl jq squashfs-tools python3
 
-  - export SNAP="/snap/snapcraft/current"
+  - SNAP="/snap/snapcraft/current"
 
 # Grab the core snap (for backwards compatibility) from the stable channel and
 # unpack it in the proper place.
@@ -29,19 +29,12 @@ snap:
     mkdir -p /snap/snapcraft
     unsquashfs -d /snap/snapcraft/current snapcraft.snap
 
-# Fix Python3 installation: Make sure we use the interpreter from
-# the snapcraft snap:
-  - |
-    unlink /snap/snapcraft/current/usr/bin/python3
-    ln -s /snap/snapcraft/current/usr/bin/python3.* /snap/snapcraft/current/usr/bin/python3
-    # echo /snap/snapcraft/current/lib/python3.*/site-packages >> /snap/snapcraft/current/usr/lib/python3/dist-packages/site-packages.pth
-
 # Create a snapcraft runner (TODO: move version detection to the core of
 # snapcraft).
   - mkdir -p /snap/bin
   - echo "#!/bin/sh" > /snap/bin/snapcraft
   - snap_version="$(awk '/^version:/{print $2}' /snap/snapcraft/current/meta/snap.yaml | tr -d \')" && echo "export SNAP_VERSION=\"$snap_version\"" >> /snap/bin/snapcraft
-  - echo 'exec "$SNAP/usr/bin/python3" "$SNAP/bin/snapcraft" "$@"' >> /snap/bin/snapcraft
+  - echo 'exec "/usr/bin/python3" "$SNAP/bin/snapcraft" "$@"' >> /snap/bin/snapcraft
   - chmod +x /snap/bin/snapcraft
 
   - export PATH=/snap/bin:/snap/snapcraft/current/usr/bin:$PATH
