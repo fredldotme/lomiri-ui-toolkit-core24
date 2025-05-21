@@ -15,6 +15,7 @@ snap:
   - echo -en $LAUNCHPAD_CREDENTIALS_ACCESS_SECRET >> ~/.local/share/snapcraft/provider/launchpad/credentials
   - echo -en "\n" >> ~/.local/share/snapcraft/provider/launchpad/credentials
 
+  - export PATH="/snap/bin:/snap/snapcraft/current/usr/bin:$PATH"
   - snapcraft remote-build --launchpad-accept-public-upload
 
   - |
