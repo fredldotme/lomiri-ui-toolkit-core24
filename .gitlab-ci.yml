@@ -1,0 +1,69 @@
+snap:
+  script:
+  - PROJECT=lomiri-ui-toolkit-core24
+  - sudo apt update && apt install -y snapd git
+  - sudo snap install --classic snapcraft
+  - mkdir -p ~/.local/share/snapcraft/provider/launchpad
+  - echo -en "[1]\n" > ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en "consumer_key = System-wide" >> ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en ":" >> ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en " Ubuntu (ubuntu)\n" >> ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en "consumer_secret = \n" >> ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en "access_token = " >> ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en $LAUNCHPAD_CREDENTIALS_ACCESS_TOKEN >> ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en "\naccess_secret = " >> ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en $LAUNCHPAD_CREDENTIALS_ACCESS_SECRET >> ~/.local/share/snapcraft/provider/launchpad/credentials
+  - echo -en "\n" >> ~/.local/share/snapcraft/provider/launchpad/credentials
+
+  - snapcraft remote-build --launchpad-accept-public-upload
+
+  - |
+    if ls $PROJECT_*_amd64.snap 1> /dev/null 2>&1; then
+      echo "amd64 snap file found"
+    else
+      echo "amd64 snap file not found"
+      cat $PROJECT_amd64.txt
+      exit 1
+    fi
+
+  - |
+    if ls $PROJECT_*_arm64.snap 1> /dev/null 2>&1; then
+      echo "arm64 snap file found"
+    else
+      echo "arm64 snap file not found"
+      cat $PROJECT_arm64.txt
+      exit 1
+    fi
+
+  - |
+    if ls $PROJECT_*_armhf.snap 1> /dev/null 2>&1; then
+      echo "armhf snap file found"
+    else
+      echo "armhf snap file not found"
+      cat $PROJECT_armhf.txt
+      exit 1
+    fi
+
+  - |
+    if [ "$CI_COMMIT_REF_NAME" = "main" ]; then
+      echo $SNAPCRAFT_LOGIN | base64 --decode --ignore-garbage > snapcraft.login
+      snapcraft login --with snapcraft.login
+      snapcraft upload ${PROJECT}*_amd64.snap --release edge
+      snapcraft upload ${PROJECT}*_arm64.snap --release edge
+      snapcraft upload ${PROJECT}*_armhf.snap --release edge
+      snapcraft logout
+    fi
+  timeout: 8h 0m
+  allow_failure: false
+  artifacts:
+    paths:
+    - "./*.snap"
+    expire_in: 10 days
+  only:
+    refs:
+    - tags
+    - merge_requests
+    - web
+  except:
+    refs:
+      - schedules
