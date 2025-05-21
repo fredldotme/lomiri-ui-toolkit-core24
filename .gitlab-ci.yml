@@ -4,7 +4,7 @@ snap:
   tags: [ubports]
   script:
   - PROJECT=lomiri-ui-toolkit-core24
-  - apt update && apt install -y git curl jq squashfs-tools
+  - apt update && apt install -y git curl jq squashfs-tools python3
 
 # Grab the core snap (for backwards compatibility) from the stable channel and
 # unpack it in the proper place.
