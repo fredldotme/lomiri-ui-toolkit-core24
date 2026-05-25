@@ -1,5 +1,5 @@
 name: lomiri-ui-toolkit-core24
-version: "latest"
+version: "1.0"
 summary: A convergent UI toolkit for all formfactors
 description: |
   Lomiri UI Toolkit
@@ -201,7 +201,6 @@ parts:
         - libqt5xml5t64
         - libqt5sql5t64
         - libqt5sql5-sqlite
-        - qtwayland5
         - fonts-ubuntu
         - fonts-dejavu
         - fonts-emojione
@@ -215,6 +214,7 @@ parts:
         - qml-module-qtquick-controls2-suru
         - suru-icon-theme
         - maliit-inputcontext-qt5
+        - qt5-xdgdesktopportal-platformtheme
         - on armhf:
             - to armhf:
                 - libqt5gui5-gles
@@ -248,14 +248,14 @@ parts:
     build-snaps: [ mesa-2404 ]
     override-prime: |
       set -eux
-      cd /snap/mesa-2404/current/usr/lib/${CRAFT_ARCH_TRIPLET}
-      find . -type f,l -exec rm -f $CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/{} \;
+      cd /snap/mesa-2404/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
+      find . -type f,l -exec rm -rf $CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/{} \;
       rm -fr "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/dri"
       for CRUFT in bug drirc.d glvnd libdrm lintian man; do
         rm -rf "$CRAFT_PRIME/usr/share/$CRUFT"
       done
       for CRUFT in libpulse-simple liburcu; do
-        rm -rf "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/${CRUFT}*"
+        rm -rf "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/${CRUFT}*"
       done
       cd $CRAFT_PRIME/usr/lib
       find . -type f -name "*.so*" -exec execstack --clear-execstack {} \;
