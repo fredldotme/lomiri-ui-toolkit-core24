@@ -28,10 +28,12 @@ if [ ! -e "$XDG_RUNTIME_DIR/pulse/pid" ]; then
     ln -sf "/run/user/$(id -u)/pulse/pid" "$XDG_RUNTIME_DIR/pulse/pid"
 fi
 
-if [ "$QT_IM_MODULE" = "maliitphablet" ]; then
+# Use Maliit on anything Lomiri
+if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_IM_MODULE=Maliit
 fi
 
+# Disable QtWayland window decoration on Lomiri
 if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 fi
@@ -57,8 +59,8 @@ fi
 
 # Find libraries, Qt plugins, QML modules, programs, fonts & icons
 # Generously include expected paths from the main app since those are expected
-# by Clickable apps which this intends to support as well.
-export PATH=${SNAP}/lomiri-ui-toolkit/usr/lib/${ARCH}/qt5/bin:${PATH}
+# by Clickable apps which this intends to match in behavior as closely as possible.
+export PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/bin:${PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/pulseaudio:${LD_LIBRARY_PATH}
 export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}

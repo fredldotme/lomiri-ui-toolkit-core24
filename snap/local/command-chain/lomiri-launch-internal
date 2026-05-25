@@ -33,9 +33,8 @@ if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 fi
 
-# Enforce use of Wayland if the socket is around
-if [ -e "/run/user/$(id -u)/$WAYLAND_DISPLAY" ]; then
-    export QT_QPA_PLATFORM=wayland-egl
+# If not using Mirclient, then fallback to Wayland
+if [ ! -e "/run/user/$(id -u)/mir_socket"] ; then
     export HYBRIS_EGLPLATFORM=wayland
 fi
 

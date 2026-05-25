@@ -4,7 +4,9 @@ summary: A convergent UI toolkit for all formfactors
 description: |
   Lomiri UI Toolkit
 
-  Lomiri UI Toolkit offers elements for graphical applications to make beautiful interfaces for your app. It is built on top of Qt5 & QML and offers support for a wide variety of form factors.
+  Lomiri UI Toolkit offers elements for graphical applications to make beautiful interfaces for your app.
+
+  It is built on top of Qt5 & QML and offers support for a wide variety of form factors.
 
   Your app can:
 
@@ -19,6 +21,13 @@ compression: lzo
 grade: stable
 confinement: strict
 base: core24
+
+package-repositories:
+  - type: apt
+    url: http://repo.ubports.com/
+    key-id: B551C909D750AA744948E9ED4BD4B4D6DBB583F1
+    components: [ main ]
+    suites: [ 24.04-2.x ]
 
 lint:
   ignore:
@@ -40,86 +49,8 @@ slots:
       - $SNAP
 
 parts:
-  suru-icons:
+  lomiri-platform:
     plugin: nil
-    source: https://gitlab.com/ubports/core/suru-icon-theme.git
-    source-branch: main
-    override-build: |
-      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/icons
-      cp -a $SNAPCRAFT_PART_SRC/suru $SNAPCRAFT_PART_INSTALL/usr/share/icons/
-
-  lomiri-ui-toolkit:
-    plugin: qmake
-    after: [ suru-icons ]
-    qmake-project-file: lomiri-sdk.pro
-    qmake-parameters:
-        - CONFIG+=ubuntu-uitk-compat
-        - CONFIG+=no_docs
-        - CONFIG+=debian_build
-    source: https://gitlab.com/ubports/core/lomiri-ui-toolkit.git
-    source-branch: main
-    override-build: |
-      # Remove unwilling subprojects
-      rm -rf $SNAPCRAFT_PART_SRC/examples || true
-      sed -i "s/ po app-launch-profiler / /g" $SNAPCRAFT_PART_SRC/lomiri-sdk.pro
-      sed -i "s/^src_uitk_launcher\./#src_uitk_launcher\./g" $SNAPCRAFT_PART_SRC/lomiri-sdk.pro
-      sed -i "s/ src_uitk_launcher apicheck/ /g" $SNAPCRAFT_PART_SRC/lomiri-sdk.pro
-
-      # Do the thing
-      craftctl default
-
-      # Avoid conflicts with qt5gl
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5EglFSDeviceIntegration.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5EglFsKmsSupport.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5Gui.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5Quick.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5XcbQpa.so*
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-emu-integration.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-kms-egldevice-integration.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-kms-integration.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-x11-integration.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevkeyboardplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevmouseplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevtabletplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevtouchplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqlibinputplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqtuiotouchplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqgif.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqico.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqjpeg.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqeglfs.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqlinuxfb.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqminimal.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqminimalegl.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqoffscreen.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqvnc.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqxcb.so
-      rm -f $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/xcbglintegrations/libqxcb-egl-integration.so
-
-    build-packages:
-        - dbus
-        - dbus-test-runner
-        - devscripts
-        - gdb
-        - libdbus-1-dev
-        - liblttng-ust-dev
-        - libqt5svg5-dev
-        - libxi-dev
-        - qtbase5-private-dev
-        - qtdeclarative5-private-dev
-        - qt5ct
-        - qml-module-qtfeedback
-        - qml-module-qtquick2
-        - qml-module-qtquick-window2
-        - qml-module-qtquick-layouts
-        - qml-module-qtgraphicaleffects
-        - qml-module-qttest
-        - qml-module-qtfeedback
-        - qtsystems5-dev
-        - qtsystems5-private-dev
-        - qtpim5-dev
     stage-packages:
         - qmlscene
         - yaru-theme-icon
@@ -224,6 +155,41 @@ parts:
         - qml-module-qtlocation
         - qml-module-qtquick-privatewidgets
         - qml-module-qtquick-scene2d
+        - qml-module-lomiri-action
+        - qml-module-lomiri-addressbook
+        - qml-module-lomiri-components
+        - qml-module-lomiri-components-extras
+        - qml-module-lomiri-connectivity
+        - qml-module-lomiri-contacts
+        - qml-module-lomiri-content
+        - qml-module-lomiri-content-doc
+        - qml-module-lomiri-downloadmanager
+        - qml-module-lomiri-downloadmanager-doc
+        - qml-module-lomiri-history
+        - qml-module-lomiri-history0.1
+        - qml-module-lomiri-keyboard
+        - qml-module-lomiri-layouts
+        - qml-module-lomiri-metrics
+        - qml-module-lomiri-notifications
+        - qml-module-lomiri-onlineaccounts
+        - qml-module-lomiri-onlineaccounts-client
+        - qml-module-lomiri-onlineaccounts-client-doc
+        - qml-module-lomiri-onlineaccounts-doc
+        - qml-module-lomiri-onlineaccounts-plugin
+        - qml-module-lomiri-performancemetrics
+        - qml-module-lomiri-pushnotifications
+        - qml-module-lomiri-settings-components
+        - qml-module-lomiri-settings-fingerprint
+        - qml-module-lomiri-settings-menus
+        - qml-module-lomiri-settings-vpn
+        - qml-module-lomiri-syncmonitor
+        - qml-module-lomiri-telephony
+        - qml-module-lomiri-telephony0.1
+        - qml-module-lomiri-telephony-dbgsym
+        - qml-module-lomiri-telephony-phonenumber
+        - qml-module-lomiri-telephony-phonenumber0.1
+        - qml-module-lomiri-test
+        - qml-module-lomiri-thumbnailer
         - libqt5quickcontrols2-5
         - libqt5quicktemplates2-5
         - libqt5multimedia5
@@ -244,120 +210,38 @@ parts:
         - gstreamer1.0-plugins-good
         - gstreamer1.0-plugins-bad
         - gstreamer1.0-plugins-ugly
-
-  qt5gl:
-    plugin: nil
-    stage-packages:
+        - liblomiri-url-dispatcher0
+        - libmir1client9
+        - qml-module-qtquick-controls2-suru
+        - suru-icon-theme
+        - maliit-inputcontext-qt5
         - on armhf:
             - to armhf:
                 - libqt5gui5-gles
                 - libqt5quick5-gles
+                - qtubuntu-android
+                - qtwayland5
+                - cameraplugin-aal
         - on arm64:
             - to arm64:
                 - libqt5gui5-gles
                 - libqt5quick5-gles
+                - qtubuntu-android
+                - qtwayland5
+                - cameraplugin-aal
         - on amd64:
             - to amd64:
                 - libqt5gui5
                 - libqt5quick5
-    after: [ lomiri-ui-toolkit ]
-
-  content-hub:
-    plugin: cmake
-    source: https://gitlab.com/ubports/development/core/lomiri-content-hub.git
-    source-branch: main
-    cmake-parameters:
-        - -DCMAKE_INSTALL_PREFIX=/usr
-        - -DENABLE_TESTS=OFF
-        - -DENABLE_DOC=OFF
-        - -DENABLE_UBUNTU_COMPAT=ON
-    build-packages:
-        - cmake-extras
-        - doxygen
-        - graphviz
-        - gettext
-        - libgtest-dev
-        - libapparmor-dev
-        - libdbus-1-dev
-        - libglib2.0-dev
-        - libgsettings-qt-dev
-        - liblomiri-api-dev
-        - libnotify-dev
-        - liblomiri-download-manager-client-dev
-        - liblomiri-app-launch-dev
-        - qml-module-lomiri-components
-        - qml-module-qtquick2
-        - qml-module-qttest
-        - qtbase5-dev
-        - qtdeclarative5-dev
-        - qtdeclarative5-dev-tools
-        - qttools5-dev-tools
-    stage-packages:
-        - liblomiri-app-launch0
-        - libgsettings-qt1
-        - liblomiri-download-manager-client0t64
-        - liblomiri-download-manager-common0t64
-        - libgdk-pixbuf-2.0-0
-        - liblomiri-api0
-        - libnotify4
-    after: [ lomiri-ui-toolkit, qt5gl ]
-
-  maliit:
-    after: [ content-hub ]
-    plugin: cmake
-    source: https://github.com/maliit/framework.git
-    source-branch: master
-    cmake-parameters:
-      - -DCMAKE_INSTALL_PREFIX=/usr
-      - -Denable-wayland=OFF
-      - -Denable-glib=OFF
-      - -Denable-tests=OFF
-      - -Denable-docs=OFF
-      - -Denable-xcb=OFF
-      - -Denable-qt-inputcontext=ON
-
-  quickcontrolssuru:
-    plugin: qmake
-    source: https://gitlab.com/ubports/development/core/qqc2-suru-style.git
-    source-branch: main
-    qmake-project-file: suru.pro
-    build-packages:
-        - qtquickcontrols2-5-dev
-        - qtquickcontrols2-5-private-dev
-        - qtdeclarative5-dev
-        - qtdeclarative5-private-dev
-        - qtdeclarative5-dev-tools
-        - qtbase5-dev
-        - qtbase5-private-dev
-        - qt5-qmake
-        - pkg-kde-tools
-    after: [ maliit ]
-
-  qt-setup:
-    source: https://invent.kde.org/neon/snap-packaging/snapcraft-desktop-integration.git
-    source-type: git
-    source-subdir: kde-neon
-    plugin: make
-    make-parameters:
-      - PLATFORM_PLUG=lomiri-ui-toolkit
-    stage-packages:
-      - tox
-
+                - qtwayland5
   misc:
-    after: [ qt-setup ]
+    after: [ lomiri-platform ]
     source: misc
-    stage-packages:
-      - libicu74
     plugin: dump
 
   cleanup:
     after:
-      - suru-icons
-      - lomiri-ui-toolkit
-      - content-hub
-      - quickcontrolssuru
-      - maliit
-      - qt-setup
+      - lomiri-platform
       - misc
     plugin: nil
     build-packages: [ execstack ]
