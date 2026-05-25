@@ -3,39 +3,39 @@
 # We're here
 SNAP_DESKTOP_RUNTIME=${SNAP}/lomiri-ui-toolkit
 
+# Set up our own XDG_RUNTIME_DIR
 if [ ! -d "$XDG_RUNTIME_DIR" ]; then
     mkdir -p "$XDG_RUNTIME_DIR"
 fi
-
 chmod 700 "$XDG_RUNTIME_DIR"
 
 # Wayland setup
 [ -z "$WAYLAND_DISPLAY" ] && WAYLAND_DISPLAY=wayland-0
-
 if [ ! -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
     ln -sf "../$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
 fi
 
+# Allow creating valid PulseAudio connections
 if [ ! -d "$XDG_RUNTIME_DIR/pulse" ]; then
     mkdir "$XDG_RUNTIME_DIR/pulse"
 fi
-
 if [ ! -e "$XDG_RUNTIME_DIR/pulse/native" ]; then
     ln -sf "/run/user/$(id -u)/pulse/native" "$XDG_RUNTIME_DIR/pulse/native"
 fi
-
 if [ ! -e "$XDG_RUNTIME_DIR/pulse/pid" ]; then
     ln -sf "/run/user/$(id -u)/pulse/pid" "$XDG_RUNTIME_DIR/pulse/pid"
 fi
 
-# Use Maliit on anything Lomiri
+# Tweaks for Lomiri and Ubuntu Touch
 if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_IM_MODULE=Maliit
+    export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 fi
 
-# Disable QtWayland window decoration on Lomiri
-if [ ! -z "$DESKTOP_FILE_HINT" ]; then
-    export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+# Otherwise if not on Lomiri prefer Wayland over also available X11 QPA
+# Qt tries both of them in sequence until one successfully connects
+if [ -z "$DESKTOP_FILE_HINT" ]; then
+    export QT_QPA_PLATFORM="wayland-egl;xcb"
 fi
 
 # Enforce use of Wayland if the socket is around
@@ -44,7 +44,7 @@ if [ -e "/run/user/$(id -u)/$WAYLAND_DISPLAY" ]; then
     export HYBRIS_EGLPLATFORM=wayland
 fi
 
-
+# Arch triplet on-disk
 if [ "$SNAP_ARCH" = "amd64" ]; then
     ARCH="x86_64-linux-gnu"
 elif [ "$SNAP_ARCH" = "armhf" ]; then

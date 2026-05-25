@@ -91,6 +91,8 @@ parts:
         - libqt5webengine-data
         - libqt5webenginecore5
         - libqt5webenginewidgets5
+        - morph-webapp-container
+        - qml-module-morph-web
         - qml-module-qtfeedback
         - qml-module-qtgraphicaleffects
         - qml-module-qtqml-models2
@@ -145,9 +147,7 @@ parts:
         - qml-module-qt-labs-platform
         - qml-module-qtquick-extras
         - qml-module-qt-labs-qmlmodels
-        - qml-module-qtquick-layouts
         - qml-module-qt-labs-settings
-        - qml-module-qtquick-localstorage
         - qml-module-qt-labs-sharedimage
         - qml-module-qtquick-particles2
         - qml-module-qt-labs-wavefrontmesh
@@ -201,6 +201,8 @@ parts:
         - libqt5xml5t64
         - libqt5sql5t64
         - libqt5sql5-sqlite
+        - libpulse0
+        - libpulse-mainloop-glib0
         - fonts-ubuntu
         - fonts-dejavu
         - fonts-emojione
@@ -245,17 +247,30 @@ parts:
       - misc
     plugin: nil
     build-packages: [ execstack ]
-    build-snaps: [ mesa-2404 ]
+    build-snaps: [ mesa-2404, hybris-2404 ]
     override-prime: |
       set -eux
-      cd /snap/mesa-2404/current/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
-      find . -type f,l -exec rm -rf $CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/{} \;
-      rm -fr "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET}/dri"
+
+      # mesa-2404 provided libraries
+      cd /snap/mesa-2404/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
+      find . -type f,l -exec rm -rf $CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/{} \;
+      rm -fr "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/dri"
       for CRUFT in bug drirc.d glvnd libdrm lintian man; do
         rm -rf "$CRAFT_PRIME/usr/share/$CRUFT"
       done
-      for CRUFT in libpulse-simple liburcu; do
-        rm -rf "$CRAFT_PRIME/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}/${CRUFT}*"
+      for CRUFT in liburcu; do
+        rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/${CRUFT}*"
+      done
+
+      # hybris-2404 provided libraries
+      cd /snap/hybris-2404/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
+      find . -type f,l -exec rm -rf $CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/{} \;
+      rm -fr "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/dri"
+      for CRUFT in bug drirc.d glvnd libdrm lintian man; do
+        rm -rf "$CRAFT_PRIME/usr/share/$CRUFT"
+      done
+      for CRUFT in liburcu; do
+        rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/${CRUFT}*"
       done
       cd $CRAFT_PRIME/usr/lib
       find . -type f -name "*.so*" -exec execstack --clear-execstack {} \;
