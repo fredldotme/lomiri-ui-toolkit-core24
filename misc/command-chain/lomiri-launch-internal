@@ -38,12 +38,6 @@ if [ -z "$DESKTOP_FILE_HINT" ]; then
     export QT_QPA_PLATFORM="wayland-egl;xcb"
 fi
 
-# Enforce use of Wayland if the socket is around
-if [ -e "/run/user/$(id -u)/$WAYLAND_DISPLAY" ]; then
-    export QT_QPA_PLATFORM=wayland-egl
-    export HYBRIS_EGLPLATFORM=wayland
-fi
-
 # Arch triplet on-disk
 if [ "$SNAP_ARCH" = "amd64" ]; then
     ARCH="x86_64-linux-gnu"
