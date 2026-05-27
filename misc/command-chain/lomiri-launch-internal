@@ -3,6 +3,19 @@
 # We're here
 SNAP_DESKTOP_RUNTIME=${SNAP}/lomiri-ui-toolkit
 
+# Arch triplet on-disk
+if [ "$SNAP_ARCH" = "amd64" ]; then
+    ARCH="x86_64-linux-gnu"
+elif [ "$SNAP_ARCH" = "armhf" ]; then
+    ARCH="arm-linux-gnueabihf"
+elif [ "$SNAP_ARCH" = "arm64" ]; then
+    ARCH="aarch64-linux-gnu"
+elif [ "$SNAP_ARCH" = "ppc64el" ]; then
+    ARCH="powerpc64le-linux-gnu"
+else
+    ARCH="$SNAP_ARCH-linux-gnu"
+fi
+
 # Set up our own XDG_RUNTIME_DIR
 if [ ! -d "$XDG_RUNTIME_DIR" ]; then
     mkdir -p "$XDG_RUNTIME_DIR"
@@ -30,39 +43,30 @@ fi
 if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_IM_MODULE=Maliit
     export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-fi
-
-# Otherwise if not on Lomiri prefer Wayland over also available X11 QPA
-# Qt tries both of them in sequence until one successfully connects
-if [ -z "$DESKTOP_FILE_HINT" ]; then
-    export QT_QPA_PLATFORM="wayland-egl;xcb"
-fi
-
-# Arch triplet on-disk
-if [ "$SNAP_ARCH" = "amd64" ]; then
-    ARCH="x86_64-linux-gnu"
-elif [ "$SNAP_ARCH" = "armhf" ]; then
-    ARCH="arm-linux-gnueabihf"
-elif [ "$SNAP_ARCH" = "arm64" ]; then
-    ARCH="aarch64-linux-gnu"
-elif [ "$SNAP_ARCH" = "ppc64el" ]; then
-    ARCH="powerpc64le-linux-gnu"
 else
-    ARCH="$SNAP_ARCH-linux-gnu"
+    # Otherwise if not on Lomiri prefer Wayland over also available X11 QPA
+    # Qt tries both of them in sequence until one successfully connects
+    export QT_QPA_PLATFORM="wayland-egl;xcb"
 fi
 
 # Find libraries, Qt plugins, QML modules, programs, fonts & icons
 # Generously include expected paths from the main app since those are expected
 # by Clickable apps which this intends to match in behavior as closely as possible.
-export PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/bin:${PATH}
+export PATH=${SNAP}:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/bin:${SNAP_DESKTOP_RUNTIME}/usr/bin:${PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/pulseaudio:${LD_LIBRARY_PATH}
+
+# Qt 5
 export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
 export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt5/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
+# Qt 6
+export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt6/plugins:${QT_PLUGIN_PATH}
+export QML_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt6/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt6/qml:${QML_IMPORT_PATH}
+
+# More XDG paths
 export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
 #export FONTCONFIG_PATH=${SNAP_DESKTOP_RUNTIME}/etc/fonts
 #export FONTCONFIG_FILE=${SNAP_DESKTOP_RUNTIME}/etc/fonts/fonts.conf
-export QT_QPA_PLATFORMTHEME=qt5ct:qt6ct
 export QT_QUICK_CONTROLS_STYLE=Suru
 
 # Make Qt find QtWebEngine and disable its own sandbox.
@@ -72,7 +76,8 @@ export QT_QUICK_CONTROLS_STYLE=Suru
 #   /usr/share/qt5:
 #     bind: $SNAP/lomiri-ui-toolkit/usr/share/qt5
 export QTWEBENGINE_DISABLE_SANDBOX=1
-export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
+[ "$LOMIRI_USE_QT6" != "true" ] && export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
+[ "$LOMIRI_USE_QT6" == "true" ] && export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/qt6/libexec/QtWebEngineProcess
 
 # Tell GStreamer where to find its plugins
 # Source: https://github.com/canonical/snapcraft/blob/main/extensions/desktop/common/desktop-exports
@@ -195,6 +200,22 @@ if [ "$needs_update" = true ]; then
       async_exec update-mime-database "$XDG_DATA_HOME/mime"
     fi
   fi
+fi
+
+function setup_content_hub_peers {
+  [ ! -f "$SNAP/manifest.json" ] && return
+
+  CLICK_HOOK=$(cat "$SNAP/manifest.json" | sed 's/"content-hub"/"contenthub"/g' | $SNAP_DESKTOP_RUNTIME/usr/bin/jq .hooks.${SNAP_INSTANCE_NAME}.contenthub | sed 's/"//g')
+  CONTENT_HUB_JSON="$SNAP/$CLICK_HOOK"
+  [ -f "$CONTENT_HUB_JSON" ] && \
+    mkdir -p "$HOME/.local/share" && \
+    ln -sf "$SNAP_REAL_HOME/.local/share/lomiri-content-hub" "$HOME/.local/share/lomiri-content-hub" && \
+    rm -f $SNAP_REAL_HOME/.local/share/lomiri-content-hub/${SNAP_NAME}_${SNAP_INSTANCE_NAME}_* && \
+    ln -sf "$CONTENT_HUB_JSON" "$SNAP_REAL_HOME/.local/share/lomiri-content-hub/${SNAP_NAME}_${SNAP_INSTANCE_NAME}_${SNAP_REVISION}"
+}
+
+if [ "$needs_update" = true ]; then
+  async_exec setup_content_hub_peers
 fi
 
 wait_for_async_execs

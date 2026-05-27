@@ -52,6 +52,7 @@ parts:
   lomiri-platform:
     plugin: nil
     stage-packages:
+        # Qt5 starting here
         - qmlscene
         - yaru-theme-icon
         - adwaita-icon-theme
@@ -91,7 +92,7 @@ parts:
         - libqt5webengine-data
         - libqt5webenginecore5
         - libqt5webenginewidgets5
-        - morph-webapp-container
+        - morph-webapp-container-qt6
         - qml-module-morph-web
         - qml-module-qtfeedback
         - qml-module-qtgraphicaleffects
@@ -162,9 +163,7 @@ parts:
         - qml-module-lomiri-connectivity
         - qml-module-lomiri-contacts
         - qml-module-lomiri-content
-        - qml-module-lomiri-content-doc
         - qml-module-lomiri-downloadmanager
-        - qml-module-lomiri-downloadmanager-doc
         - qml-module-lomiri-history
         - qml-module-lomiri-history0.1
         - qml-module-lomiri-keyboard
@@ -173,8 +172,6 @@ parts:
         - qml-module-lomiri-notifications
         - qml-module-lomiri-onlineaccounts
         - qml-module-lomiri-onlineaccounts-client
-        - qml-module-lomiri-onlineaccounts-client-doc
-        - qml-module-lomiri-onlineaccounts-doc
         - qml-module-lomiri-onlineaccounts-plugin
         - qml-module-lomiri-performancemetrics
         - qml-module-lomiri-pushnotifications
@@ -185,7 +182,6 @@ parts:
         - qml-module-lomiri-syncmonitor
         - qml-module-lomiri-telephony
         - qml-module-lomiri-telephony0.1
-        - qml-module-lomiri-telephony-dbgsym
         - qml-module-lomiri-telephony-phonenumber
         - qml-module-lomiri-telephony-phonenumber0.1
         - qml-module-lomiri-test
@@ -217,25 +213,141 @@ parts:
         - suru-icon-theme
         - maliit-inputcontext-qt5
         - qt5-xdgdesktopportal-platformtheme
+        - jq
+        - mir1-utils
+        # Provide a full Qt6 solution
+        - qml6-module-gsettings
+        - qml6-module-lomiri-action
+        - qml6-module-lomiri-downloadmanager
+        - qml6-module-qt-labs-animation
+        - qml6-module-qt-labs-folderlistmodel
+        - qml6-module-qt-labs-platform
+        - qml6-module-qt-labs-qmlmodels
+        - qml6-module-qt-labs-settings
+        - qml6-module-qt-labs-sharedimage
+        - qml6-module-qt5compat-graphicaleffects
+        - qml6-module-qtcore
+        - qml6-module-qtmultimedia
+        - qml6-module-qtpositioning
+        - qml6-module-qtqml
+        - qml6-module-qtqml-models
+        - qml6-module-qtqml-statemachine
+        - qml6-module-qtqml-workerscript
+        - qml6-module-qtqml-xmllistmodel
+        - qml6-module-qtquick
+        - qml6-module-qtquick-controls
+        - qml6-module-qtquick-dialogs
+        - qml6-module-qtquick-layouts
+        - qml6-module-qtquick-localstorage
+        - qml6-module-qtquick-particles
+        - qml6-module-qtquick-pdf
+        - qml6-module-qtquick-shapes
+        - qml6-module-qtquick-templates
+        - qml6-module-qtquick-timeline
+        - qml6-module-qtquick-tooling
+        - qml6-module-qtquick-window
+        - qml6-module-qtscxml
+        - qml6-module-qtsensors
+        - qml6-module-qttest
+        - qml6-module-qtwebchannel
+        - qml6-module-qtwebengine
+        - qml6-module-qtwebengine-controlsdelegates
+        - qml6-module-qtwebsockets
+        - qml6-module-qtqml-workerscript
+        - qml6-module-qtqml-models
+        - qml6-module-assets-downloader
+        - qml6-module-biometryd
+        - qml6-module-gsettings
+        - qml6-module-ktactilefeedback
+        - qml6-module-lomiri-action
+        - qml6-module-lomiri-components
+        - qml6-module-lomiri-components-extras
+        - qml6-module-lomiri-components-labs
+        - qml6-module-lomiri-connectivity
+        - qml6-module-lomiri-content
+        - qml6-module-lomiri-downloadmanager
+        - qml6-module-lomiri-keyboard
+        - qml6-module-lomiri-layouts
+        - qml6-module-lomiri-metrics
+        - qml6-module-lomiri-notifications
+        - qml6-module-lomiri-onlineaccounts
+        - qml6-module-lomiri-onlineaccounts-client
+        - qml6-module-lomiri-onlineaccounts-plugin
+        - qml6-module-lomiri-performancemetrics
+        - qml6-module-lomiri-pushnotifications
+        - qml6-module-lomiri-systeminfo
+        - qml6-module-lomiri-thumbnailer
+        - qml6-module-mediascanner
+        - qml6-module-morph-web
+        - qml6-module-ofono
+        - qml6-module-qml
+        - qml6-module-qmltime
+        - qml6-module-qt5compat-graphicaleffects
+        - qml6-module-qtcore
+        - qml6-module-qt-labs-animation
+        - qml6-module-qt-labs-folderlistmodel
+        - qml6-module-qt-labs-platform
+        - qml6-module-qt-labs-qmlmodels
+        - qml6-module-qt-labs-settings
+        - qml6-module-qt-labs-sharedimage
+        - qml6-module-qt-labs-wavefrontmesh
+        - qml6-module-qtlocation
+        - qml6-module-qtmultimedia
+        - qml6-module-qtnetwork
+        - qml6-module-qtpositioning
+        - qml6-module-qtqml
+        - qml6-module-qtqml-models
+        - qml6-module-qtqml-statemachine
+        - qml6-module-qtqml-workerscript
+        - qml6-module-qtqml-xmllistmodel
+        - qml6-module-qtquick
+        - qml6-module-qtquick-controls
+        - qml6-module-qtquick-controls2-suru
+        - qml6-module-qtquick-dialogs
+        - qml6-module-qtquick-effects
+        - qml6-module-qtquick-layouts
+        - qml6-module-qtquick-localstorage
+        - qml6-module-qtquick-particles
+        - qml6-module-qtquick-pdf
+        - qml6-module-qtquick-shapes
+        - qml6-module-qtquick-templates
+        - qml6-module-qtquick-timeline
+        - qml6-module-qtquick-timeline-blendtrees
+        - qml6-module-qtquick-tooling
+        - qml6-module-qtquick-vectorimage
+        - qml6-module-qtquick-window
+        - qml6-module-qtscxml
+        - qml6-module-qtsensors
+        - qml6-module-qttest
+        - qml6-module-qtwayland-client-texturesharing
+        - qml6-module-qtwayland-compositor
+        - qml6-module-qtwebchannel
+        - qml6-module-qtwebengine
+        - qml6-module-qtwebengine-controlsdelegates
+        - qml6-module-qtwebsockets
+        - qml6-module-snapd2
+        - qml6-module-sso-onlineaccounts
+        - maliit-inputcontext-qt6
         - on armhf:
             - to armhf:
                 - libqt5gui5-gles
                 - libqt5quick5-gles
-                - qtubuntu-android
                 - qtwayland5
+                - qt6-wayland
                 - cameraplugin-aal
         - on arm64:
             - to arm64:
                 - libqt5gui5-gles
                 - libqt5quick5-gles
-                - qtubuntu-android
                 - qtwayland5
                 - cameraplugin-aal
+                - qt6-wayland
         - on amd64:
             - to amd64:
                 - libqt5gui5
                 - libqt5quick5
                 - qtwayland5
+                - qt6-wayland
   misc:
     after: [ lomiri-platform ]
     source: misc
