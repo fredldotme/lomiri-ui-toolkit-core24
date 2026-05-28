@@ -48,7 +48,7 @@ fi
 # Change QPA platforms to first attempt Wayland, then X11.
 # Though feasible, we don't ship ubuntumirclient in here as that would
 # require the mir_socket to be more broadly accessible in confinement.
-export QT_QPA_PLATFORM="wayland-egl;xcb"
+[ -z "$QT_QPA_PLATFORM" ] && export QT_QPA_PLATFORM="wayland-egl;xcb"
 
 # Find libraries, Qt plugins, QML modules, programs, fonts & icons
 # Generously include expected paths from the main app since those are expected
