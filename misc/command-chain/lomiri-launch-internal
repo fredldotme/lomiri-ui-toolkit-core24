@@ -53,21 +53,30 @@ fi
 # Generously include expected paths from the main app since those are expected
 # by Clickable apps which this intends to match in behavior as closely as possible.
 export PATH=${SNAP}:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/bin:${SNAP_DESKTOP_RUNTIME}/usr/bin:${PATH}
+
+# Libraries (both Qt5 & Qt6)
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/pulseaudio:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libproxy:${LD_LIBRARY_PATH}
 
 # Qt 5
 export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
 export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt5/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
+
 # Qt 6
 export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt6/plugins:${QT_PLUGIN_PATH}
 export QML_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt6/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt6/qml:${QML_IMPORT_PATH}
 
 # More XDG paths
 export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
-#export FONTCONFIG_PATH=${SNAP_DESKTOP_RUNTIME}/etc/fonts
-#export FONTCONFIG_FILE=${SNAP_DESKTOP_RUNTIME}/etc/fonts/fonts.conf
+
+# QQC2 style
 export QT_QUICK_CONTROLS_STYLE=Suru
+
+# We ship UBports builds of Qt6 with runtime selection of OpenGL/ES
+if [ "$SNAP_ARCH" == "arm64" ] || [ "$SNAP_ARCH" == "armhf" ]; then
+    export QT_OPENGL_VARIANT=gles
+fi
 
 # Make Qt find QtWebEngine and disable its own sandbox.
 # QtWebEngine also requires an additional layout like:
@@ -76,6 +85,7 @@ export QT_QUICK_CONTROLS_STYLE=Suru
 #   /usr/share/qt5:
 #     bind: $SNAP/lomiri-ui-toolkit/usr/share/qt5
 export QTWEBENGINE_DISABLE_SANDBOX=1
+[ -z "$LOMIRI_USE_QT6" ] && LOMIRI_USE_QT6=false
 [ "$LOMIRI_USE_QT6" != "true" ] && export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
 [ "$LOMIRI_USE_QT6" == "true" ] && export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/qt6/libexec/QtWebEngineProcess
 
