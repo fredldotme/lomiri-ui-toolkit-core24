@@ -103,6 +103,14 @@ export GST_PLUGIN_SCANNER=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/gstreamer1.0/g
 export FONTCONFIG_PATH="$SNAP_DESKTOP_RUNTIME/etc/fonts"
 export FONTCONFIG_FILE="$SNAP_DESKTOP_RUNTIME/etc/fonts/fonts.conf"
 
+# QtWebEngine from UBports links libandroid-properties and libmedia from libhybris
+[ -z "$HYBRIS_LINKER_DIR" ] && \
+    export HYBRIS_LINKER_DIR=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libhybris/linker
+[ -z "$HYBRIS_EGLPLATFORM_DIR" ] && \
+    export HYBRIS_EGLPLATFORM_DIR=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libhybris
+[ -z "$HYBRIS_VULKANPLATFORM_DIR" ] && \
+    export HYBRIS_VULKANPLATFORM_DIR=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libhybris
+
 # shellcheck source=/dev/null
 source "$SNAP_USER_DATA/.last_revision" 2>/dev/null || true
 if [ "$SNAP_DESKTOP_LAST_REVISION" = "$SNAP_REVISION" ]; then
