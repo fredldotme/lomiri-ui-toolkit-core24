@@ -208,13 +208,11 @@ parts:
         - gstreamer1.0-plugins-bad
         - gstreamer1.0-plugins-ugly
         - liblomiri-url-dispatcher0
-        - libmir1client9
         - qml-module-qtquick-controls2-suru
         - suru-icon-theme
         - maliit-inputcontext-qt5
         - qt5-xdgdesktopportal-platformtheme
         - jq
-        - mir1-utils
         # Provide a full Qt6 solution
         - qml6-module-gsettings
         - qml6-module-lomiri-action
