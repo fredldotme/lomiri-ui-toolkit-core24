@@ -392,7 +392,7 @@ parts:
       - misc
     plugin: nil
     build-packages: [ execstack ]
-    build-snaps: [ mesa-2404, hybris-2404 ]
+    build-snaps: [ mesa-2404 ]
     override-prime: |
       set -eux
 
@@ -407,16 +407,6 @@ parts:
         rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/${CRUFT}*"
       done
 
-      # hybris-2404 provided libraries
-      cd /snap/hybris-2404/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
-      find . -type f,l -exec rm -rf $CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/{} \;
-      rm -fr "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/dri"
-      for CRUFT in bug drirc.d glvnd libdrm lintian man; do
-        rm -rf "$CRAFT_PRIME/usr/share/$CRUFT"
-      done
-      for CRUFT in liburcu; do
-        rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/${CRUFT}*"
-      done
       cd $CRAFT_PRIME/usr/lib
       find . -type f -name "*.so*" -exec execstack --clear-execstack {} \;
       if [ -f "$CRAFT_PRIME/etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf" ]; then
