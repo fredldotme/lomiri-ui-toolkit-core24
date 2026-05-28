@@ -43,11 +43,12 @@ fi
 if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_IM_MODULE=Maliit
     export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-else
-    # Otherwise if not on Lomiri prefer Wayland over also available X11 QPA
-    # Qt tries both of them in sequence until one successfully connects
-    export QT_QPA_PLATFORM="wayland-egl;xcb"
 fi
+
+# Change QPA platforms to first attempt Wayland, then X11.
+# Though feasible, we don't ship ubuntumirclient in here as that would
+# require the mir_socket to be more broadly accessible in confinement.
+export QT_QPA_PLATFORM="wayland-egl;xcb"
 
 # Find libraries, Qt plugins, QML modules, programs, fonts & icons
 # Generously include expected paths from the main app since those are expected
@@ -86,8 +87,10 @@ fi
 #     bind: $SNAP/lomiri-ui-toolkit/usr/share/qt5
 export QTWEBENGINE_DISABLE_SANDBOX=1
 [ -z "$LOMIRI_USE_QT6" ] && LOMIRI_USE_QT6=false
-[ "$LOMIRI_USE_QT6" != "true" ] && export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
-[ "$LOMIRI_USE_QT6" == "true" ] && export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/qt6/libexec/QtWebEngineProcess
+[ "$LOMIRI_USE_QT6" != "true" ] && \
+    export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
+[ "$LOMIRI_USE_QT6" == "true" ] && \
+    export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/qt6/libexec/QtWebEngineProcess
 
 # Tell GStreamer where to find its plugins
 # Source: https://github.com/canonical/snapcraft/blob/main/extensions/desktop/common/desktop-exports

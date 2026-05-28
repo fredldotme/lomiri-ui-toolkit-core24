@@ -326,34 +326,69 @@ parts:
         - qml6-module-snapd2
         - qml6-module-sso-onlineaccounts
         - maliit-inputcontext-qt6
+        - qtwayland5
+        - qt6-wayland
+    # Avoid conflicts with the 'specifics' part
+    stage:
+        - usr/
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5Gui.so.5.*.*
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5Quick.so.5.*.*
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5XcbQpa.so.5.*.*
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5EglFSDeviceIntegration.so.5.*.*
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5EglFsKmsSupport.so.5.*.*
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-emu-integration.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-kms-egldevice-integration.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-kms-integration.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/egldeviceintegrations/libqeglfs-x11-integration.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevkeyboardplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevmouseplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevtabletplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqevdevtouchplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqlibinputplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/generic/libqtuiotouchplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqgif.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqico.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/imageformats/libqjpeg.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforminputcontexts/libcomposeplatforminputcontextplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforminputcontexts/libibusplatforminputcontextplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqeglfs.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqlinuxfb.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqminimal.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqminimalegl.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqoffscreen.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqvnc.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/platforms/libqxcb.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt5/plugins/xcbglintegrations/libqxcb-egl-integration.so
+
+  specifics:
+    after:
+      - lomiri-platform
+    plugin: nil
+    stage-packages:
         - on armhf:
             - to armhf:
                 - libqt5gui5-gles
                 - libqt5quick5-gles
-                - qtwayland5
-                - qt6-wayland
                 - cameraplugin-aal
         - on arm64:
             - to arm64:
                 - libqt5gui5-gles
                 - libqt5quick5-gles
-                - qtwayland5
                 - cameraplugin-aal
-                - qt6-wayland
         - on amd64:
             - to amd64:
                 - libqt5gui5
                 - libqt5quick5
-                - qtwayland5
-                - qt6-wayland
+
   misc:
-    after: [ lomiri-platform ]
+    after: [ lomiri-platform, specifics ]
     source: misc
     plugin: dump
 
   cleanup:
     after:
       - lomiri-platform
+      - specifics
       - misc
     plugin: nil
     build-packages: [ execstack ]
