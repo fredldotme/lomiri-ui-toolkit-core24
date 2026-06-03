@@ -45,9 +45,13 @@ if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 fi
 
-# Change QPA platforms to first attempt Wayland, then X11.
-# Though feasible, we don't ship ubuntumirclient in here as that would
-# require the mir_socket to be more broadly accessible in confinement.
+# Check for the existance of a mir plug, and disable ubuntumirclient QPA in case
+# of an error.
+snapctl is-connected mir 2> /dev/null
+MIR_CONNECTED=$?
+[ "$MIR_CONNECTED" != "0" ] && export QT_QPA_PLATFORM="wayland-egl;xcb"
+
+# Default in case no QT_QPA_PLATFORM is set
 [ -z "$QT_QPA_PLATFORM" ] && export QT_QPA_PLATFORM="wayland-egl;xcb"
 
 # Find libraries, Qt plugins, QML modules, programs, fonts & icons
@@ -73,6 +77,9 @@ export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
 
 # QQC2 style
 export QT_QUICK_CONTROLS_STYLE=Suru
+
+# Mirclient platforms for Android devices
+export MIR_CLIENT_PLATFORM_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/mir1/client-platform
 
 # We ship UBports builds of Qt6 with runtime selection of OpenGL/ES
 if [ "$SNAP_ARCH" == "arm64" ] || [ "$SNAP_ARCH" == "armhf" ]; then

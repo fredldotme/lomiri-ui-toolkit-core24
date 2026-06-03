@@ -374,6 +374,10 @@ parts:
                 - cameraplugin-aal
                 - qtubuntu-media
                 - gst-hybris
+                - qtubuntu-android
+                - mir1-client-platform-android5
+                - mir1-client-platform-android-caf5
+                - mir1-client-platform-android2-5
         - on arm64:
             - to arm64:
                 - libqt5gui5-gles
@@ -381,6 +385,10 @@ parts:
                 - cameraplugin-aal
                 - qtubuntu-media
                 - gst-hybris
+                - qtubuntu-android
+                - mir1-client-platform-android5
+                - mir1-client-platform-android-caf5
+                - mir1-client-platform-android2-5
         - on amd64:
             - to amd64:
                 - libqt5gui5
