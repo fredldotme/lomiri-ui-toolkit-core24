@@ -186,6 +186,8 @@ parts:
         - qml-module-lomiri-telephony-phonenumber0.1
         - qml-module-lomiri-test
         - qml-module-lomiri-thumbnailer
+        - qml-module-mediascanner0.1
+        - qml-module-usermetrics
         - libqt5quickcontrols2-5
         - libqt5quicktemplates2-5
         - libqt5multimedia5
@@ -370,11 +372,15 @@ parts:
                 - libqt5gui5-gles
                 - libqt5quick5-gles
                 - cameraplugin-aal
+                - qtubuntu-media
+                - gst-hybris
         - on arm64:
             - to arm64:
                 - libqt5gui5-gles
                 - libqt5quick5-gles
                 - cameraplugin-aal
+                - qtubuntu-media
+                - gst-hybris
         - on amd64:
             - to amd64:
                 - libqt5gui5

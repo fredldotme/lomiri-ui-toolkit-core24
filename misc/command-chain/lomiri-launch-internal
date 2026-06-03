@@ -79,6 +79,9 @@ if [ "$SNAP_ARCH" == "arm64" ] || [ "$SNAP_ARCH" == "armhf" ]; then
     export QT_OPENGL_VARIANT=gles
 fi
 
+# Point MediaScanner cache to REAL_HOME's location
+export MEDIASCANNER_CACHEDIR=${SNAP_REAL_HOME}/.cache/mediascanner-2.0
+
 # Make Qt find QtWebEngine and disable its own sandbox.
 # QtWebEngine also requires an additional layout like:
 #
