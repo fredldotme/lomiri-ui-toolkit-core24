@@ -79,6 +79,7 @@ export QML_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt6/qml:${SNA
 
 # More XDG paths
 export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
+export XDG_CONFIG_DIRS=${SNAP_DESKTOP_RUNTIME}/etc/xdg:${XDG_CONFIG_DIRS}
 
 # QQC2 style
 export QT_QUICK_CONTROLS_STYLE=Suru
