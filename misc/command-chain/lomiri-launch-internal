@@ -45,14 +45,19 @@ if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 fi
 
-# Check for the existance of a mir plug, and disable ubuntumirclient QPA in case
-# of an error.
-snapctl is-connected mir 2> /dev/null
-MIR_CONNECTED=$?
-[ "$MIR_CONNECTED" != "0" ] && export QT_QPA_PLATFORM="wayland-egl;xcb"
-
-# Default in case no QT_QPA_PLATFORM is set
-[ -z "$QT_QPA_PLATFORM" ] && export QT_QPA_PLATFORM="wayland-egl;xcb"
+# Check for the existance of display server protocol connections
+# and only add those to the list which are allowed by the user
+SUPPORTED_PLATFORMS=""
+if snapctl is-connected x11 2> /dev/null; then
+   SUPPORTED_PLATFORMS="xcb;$SUPPORTED_PLATFORMS"
+fi
+if snapctl is-connected wayland 2> /dev/null; then
+   SUPPORTED_PLATFORMS="wayland-egl;$SUPPORTED_PLATFORMS"
+fi
+if snapctl is-connected mir 2> /dev/null; then
+   SUPPORTED_PLATFORMS="ubuntumirclient;$SUPPORTED_PLATFORMS"
+fi
+export QT_QPA_PLATFORM="$SUPPORTED_PLATFORMS"
 
 # Find libraries, Qt plugins, QML modules, programs, fonts & icons
 # Generously include expected paths from the main app since those are expected
@@ -80,6 +85,11 @@ export QT_QUICK_CONTROLS_STYLE=Suru
 
 # Mirclient platforms for Android devices
 export MIR_CLIENT_PLATFORM_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/mir1/client-platform
+
+# Adapt XDG variables to confined $HOME
+export XDG_DATA_HOME="$SNAP_USER_DATA/.local/share"
+export XDG_CONFIG_HOME="$SNAP_USER_DATA/.config"
+export XDG_CACHE_HOME="$SNAP_USER_DATA/.cache"
 
 # We ship UBports builds of Qt6 with runtime selection of OpenGL/ES
 if [ "$SNAP_ARCH" == "arm64" ] || [ "$SNAP_ARCH" == "armhf" ]; then
@@ -121,6 +131,10 @@ export FONTCONFIG_FILE="$SNAP_DESKTOP_RUNTIME/etc/fonts/fonts.conf"
 [ -z "$HYBRIS_VULKANPLATFORM_DIR" ] && \
     export HYBRIS_VULKANPLATFORM_DIR=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libhybris
 
+mkdir -p $XDG_DATA_HOME
+mkdir -p $XDG_CONFIG_HOME
+mkdir -p $XDG_CACHE_HOME
+
 # shellcheck source=/dev/null
 source "$SNAP_USER_DATA/.last_revision" 2>/dev/null || true
 if [ "$SNAP_DESKTOP_LAST_REVISION" = "$SNAP_REVISION" ]; then
@@ -154,24 +168,23 @@ function wait_for_async_execs() {
 REALHOME=$(getent passwd $UID | cut -d ':' -f 6)
 
 # Set config folder to local path
-export XDG_CONFIG_HOME="$SNAP_USER_DATA/.config"
 ensure_dir_exists "$XDG_CONFIG_HOME"
 chmod 700 "$XDG_CONFIG_HOME"
 
 # If there is no user user-dirs, don't check for the checksum
-if [[ -f "$REALHOME/.config/user-dirs.dirs" ]]; then
+#if [[ -f "$REALHOME/.config/user-dirs.dirs" ]]; then
   # If the user has modified their user-dirs settings, force an update
-  if [[ -f "$XDG_CONFIG_HOME/user-dirs.dirs.md5sum" ]]; then
-    if [[ "$(md5sum < "$REALHOME/.config/user-dirs.dirs")" != "$(cat "$XDG_CONFIG_HOME/user-dirs.dirs.md5sum")" ||
-          ( -f "$XDG_CONFIG_HOME/user-dirs.locale.md5sum" &&
-            "$(md5sum < "$REALHOME/.config/user-dirs.locale")" != "$(cat "$XDG_CONFIG_HOME/user-dirs.locale.md5sum")" ) ]]; then
-      needs_update=true
-    fi
-  else
+#  if [[ -f "$XDG_CONFIG_HOME/user-dirs.dirs.md5sum" ]]; then
+#    if [[ "$(md5sum < "$REALHOME/.config/user-dirs.dirs")" != "$(cat "$XDG_CONFIG_HOME/user-dirs.dirs.md5sum")" ||
+#          ( -f "$XDG_CONFIG_HOME/user-dirs.locale.md5sum" &&
+#            "$(md5sum < "$REALHOME/.config/user-dirs.locale")" != "$(cat "$XDG_CONFIG_HOME/user-dirs.locale.md5sum")" ) ]]; then
+#      needs_update=true
+#    fi
+#  else
     # shellcheck disable=SC2034
-    needs_update=true
-  fi
-fi
+#    needs_update=true
+#  fi
+#fi
 
 function make_user_fontconfig {
   echo "<fontconfig>"
@@ -245,10 +258,13 @@ function setup_content_hub_peers {
     ln -sf "$CONTENT_HUB_JSON" "$SNAP_REAL_HOME/.local/share/lomiri-content-hub/${SNAP_NAME}_${SNAP_INSTANCE_NAME}_${SNAP_REVISION}"
 }
 
-if [ "$needs_update" = true ]; then
-  async_exec setup_content_hub_peers
-fi
+#if [ "$needs_update" = true ]; then
+#  async_exec setup_content_hub_peers
+#fi
 
 wait_for_async_execs
+
+mkdir -p $SNAP_USER_DATA
+echo "SNAP_DESKTOP_LAST_REVISION=$SNAP_REVISION" > "$SNAP_USER_DATA/.last_revision"
 
 exec "$@"
