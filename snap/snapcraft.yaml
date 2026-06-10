@@ -213,7 +213,6 @@ parts:
         - qml-module-qtquick-controls2-suru
         - suru-icon-theme
         - maliit-inputcontext-qt5
-        - qt5-xdgdesktopportal-platformtheme
         - jq
         # Provide a full Qt6 solution
         - qml6-module-gsettings
@@ -374,6 +373,8 @@ parts:
                 - cameraplugin-aal
                 - qtubuntu-media
                 - gst-hybris
+                - libqt5sensors5-sensorfw
+                - lomiri-location-service-qt5-plugin
                 - qtubuntu-android
                 - mir1-client-platform-android5
                 - mir1-client-platform-android-caf5
@@ -385,6 +386,8 @@ parts:
                 - cameraplugin-aal
                 - qtubuntu-media
                 - gst-hybris
+                - libqt5sensors5-sensorfw
+                - lomiri-location-service-qt5-plugin
                 - qtubuntu-android
                 - mir1-client-platform-android5
                 - mir1-client-platform-android-caf5
