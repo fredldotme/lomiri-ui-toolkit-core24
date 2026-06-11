@@ -79,7 +79,10 @@ export QML_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt6/qml:${SNA
 
 # More XDG paths
 export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
-export XDG_CONFIG_DIRS=${SNAP_DESKTOP_RUNTIME}/etc/xdg:${XDG_CONFIG_DIRS}
+
+# Use sensorfw plugin for Halium devices
+[ -d /android ] && \
+    export XDG_CONFIG_DIRS=${SNAP_DESKTOP_RUNTIME}/etc/xdg:${XDG_CONFIG_DIRS}
 
 # QQC2 style
 export QT_QUICK_CONTROLS_STYLE=Suru
@@ -124,7 +127,7 @@ export GST_PLUGIN_SCANNER=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/gstreamer1.0/g
 export FONTCONFIG_PATH="$SNAP_DESKTOP_RUNTIME/etc/fonts"
 export FONTCONFIG_FILE="$SNAP_DESKTOP_RUNTIME/etc/fonts/fonts.conf"
 
-# QtWebEngine from UBports links libandroid-properties and libmedia from libhybris
+# QtWebEngine from UBports links libandroid-properties and libcamera from libhybris
 [ -z "$HYBRIS_LINKER_DIR" ] && \
     export HYBRIS_LINKER_DIR=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libhybris/linker
 [ -z "$HYBRIS_EGLPLATFORM_DIR" ] && \
@@ -246,22 +249,6 @@ if [ "$needs_update" = true ]; then
     fi
   fi
 fi
-
-function setup_content_hub_peers {
-  [ ! -f "$SNAP/manifest.json" ] && return
-
-  CLICK_HOOK=$(cat "$SNAP/manifest.json" | sed 's/"content-hub"/"contenthub"/g' | $SNAP_DESKTOP_RUNTIME/usr/bin/jq .hooks.${SNAP_INSTANCE_NAME}.contenthub | sed 's/"//g')
-  CONTENT_HUB_JSON="$SNAP/$CLICK_HOOK"
-  [ -f "$CONTENT_HUB_JSON" ] && \
-    mkdir -p "$HOME/.local/share" && \
-    ln -sf "$SNAP_REAL_HOME/.local/share/lomiri-content-hub" "$HOME/.local/share/lomiri-content-hub" && \
-    rm -f $SNAP_REAL_HOME/.local/share/lomiri-content-hub/${SNAP_NAME}_${SNAP_INSTANCE_NAME}_* && \
-    ln -sf "$CONTENT_HUB_JSON" "$SNAP_REAL_HOME/.local/share/lomiri-content-hub/${SNAP_NAME}_${SNAP_INSTANCE_NAME}_${SNAP_REVISION}"
-}
-
-#if [ "$needs_update" = true ]; then
-#  async_exec setup_content_hub_peers
-#fi
 
 wait_for_async_execs
 
