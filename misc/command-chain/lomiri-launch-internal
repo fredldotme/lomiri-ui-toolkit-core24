@@ -24,6 +24,7 @@ chmod 700 "$XDG_RUNTIME_DIR"
 
 # Wayland setup
 [ -z "$WAYLAND_DISPLAY" ] && WAYLAND_DISPLAY=wayland-0
+export WAYLAND_DISPLAY
 if [ ! -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ]; then
     ln -sf "../$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"
 fi
@@ -39,6 +40,15 @@ if [ ! -e "$XDG_RUNTIME_DIR/pulse/pid" ]; then
     ln -sf "/run/user/$(id -u)/pulse/pid" "$XDG_RUNTIME_DIR/pulse/pid"
 fi
 
+# Check X11 availability
+[ -z "$DISPLAY" ] && DISPLAY=:0
+export DISPLAY
+X11_SOCKET=/tmp/.X11-unix/$(echo "$DISPLAY" | sed "s/^:/X/g")
+
+# Also MirClient
+[ -z "$MIR_SOCKET" ] && MIR_SOCKET="/run/user/$(id -u)/mir_socket"
+export MIR_SOCKET
+
 # Tweaks for Lomiri and Ubuntu Touch
 if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_IM_MODULE=Maliit
@@ -47,14 +57,18 @@ fi
 
 # Check for the existance of display server protocol connections
 # and only add those to the list which are allowed by the user
+# and are set up to find the respective socket.
 SUPPORTED_PLATFORMS=""
-if snapctl is-connected x11 2> /dev/null; then
+if snapctl is-connected x11 2> /dev/null && \
+       test -e "$X11_SOCKET"; then
    SUPPORTED_PLATFORMS="xcb;$SUPPORTED_PLATFORMS"
 fi
-if snapctl is-connected wayland 2> /dev/null; then
+if snapctl is-connected wayland 2> /dev/null && \
+       test -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"; then
    SUPPORTED_PLATFORMS="wayland-egl;$SUPPORTED_PLATFORMS"
 fi
-if snapctl is-connected mir 2> /dev/null; then
+if snapctl is-connected mir 2> /dev/null && \
+       test -e "$MIR_SOCKET"; then
    SUPPORTED_PLATFORMS="ubuntumirclient;$SUPPORTED_PLATFORMS"
 fi
 export QT_QPA_PLATFORM="$SUPPORTED_PLATFORMS"
