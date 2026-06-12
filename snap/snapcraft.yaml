@@ -492,3 +492,6 @@ parts:
       rm -rf "$CRAFT_PRIME/usr/sbin"
       rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/perl{5,-base}"
       rm -rf "$CRAFT_PRIME/usr/lib/{udev,systemd}"
+
+      # Points to /run
+      rm -f "$CRAFT_PRIME/etc/pulse/client.conf.d/*-enable-autospawn.conf"
