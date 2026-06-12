@@ -54,9 +54,7 @@ parts:
     stage-packages:
         # Qt5 starting here
         - qmlscene
-        - yaru-theme-icon
-        - adwaita-icon-theme
-        - humanity-icon-theme
+        - suru-icon-theme
         - hicolor-icon-theme
         - libbluetooth3
         - liblttng-ust1t64
@@ -212,7 +210,6 @@ parts:
         - gstreamer1.0-plugins-ugly
         - liblomiri-url-dispatcher0
         - qml-module-qtquick-controls2-suru
-        - suru-icon-theme
         - maliit-inputcontext-qt5
         - jq
         # Provide a full Qt6 solution
@@ -330,9 +327,51 @@ parts:
         - maliit-inputcontext-qt6
         - qtwayland5
         - qt6-wayland
-    # Avoid conflicts with the 'specifics' part
     stage:
         - usr/
+        - -usr/bin/
+        - usr/bin/paplay
+        - usr/bin/parec
+        - usr/bin/fc-*
+        - usr/bin/webapp-container
+        - usr/bin/xdg-*
+        - -usr/lib/evolution-data-server
+        - -usr/lib/emacsen-common
+        - -usr/lib/systemd
+        - -usr/libexec/evolution-data-server/
+        - -usr/libexec/libusermetrics/
+        - -usr/libexec/lomiri-history-daemon
+        - -usr/libexec/lomiri-thumbnailer/
+        - -usr/libexec/mediascanner-2.0/
+        - -usr/share/aclocal/
+        - -usr/share/applications/
+        - -usr/share/apport/
+        - -usr/share/bash-completion/
+        - -usr/share/click/
+        - -usr/share/dbus-1/
+        - -usr/share/debconf/
+        - -usr/share/directfb-*/
+        - -usr/share/doc/
+        - -usr/share/evolution-data-server/
+        - -usr/share/info/
+        - -usr/share/language-tools/
+        - -usr/share/polkit-1/
+        - -usr/share/perl5/
+        - -usr/share/session-migration/
+        - -usr/share/telepathy/
+        - -usr/share/upstart/
+        - -usr/share/zsh/
+        - -var/
+        - etc/
+        - -etc/vulkan/
+        - -etc/apparmor/
+        - -etc/dbus-1/
+        - -etc/deviceinfo/
+        - -etc/X11/
+        - -lib/click-apparmor/
+        - -lib/systemd/
+        - -lib/udev/
+        # Avoid conflicts with the 'specifics' part
         - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5Gui.so.5.*.*
         - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5Quick.so.5.*.*
         - -usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libQt5XcbQpa.so.5.*.*
@@ -421,18 +460,16 @@ parts:
       for CRUFT in bug drirc.d glvnd libdrm lintian man; do
         rm -rf "$CRAFT_PRIME/usr/share/$CRUFT"
       done
-      for CRUFT in liburcu; do
-        rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/${CRUFT}*"
-      done
+      rm -rf $CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/liburcu*
 
       # hybris-2404 provided libraries
       # We can't clean up against hybris-2404 as mainline also links against libhybris
       # right now. We can unify this once QtWebEngine runtime-loads libhybris instead.
-      rm -f "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/*_libhybris*.so*"
-      rm -f "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libhybris/*.so"
+      rm -f $CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/lib{EGL,GLESv1_CM,GLESv2}_libhybris.so*
+      rm -f $CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libhybris/*.so
 
       # Probably a relict from our custom Mesa build
-      rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_*.so*"
+      rm -rf $CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_*.so*
 
       # Clear execstack to silence store complaints
       cd $CRAFT_PRIME/usr/lib
@@ -442,3 +479,16 @@ parts:
       if [ -f "$CRAFT_PRIME/etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf" ]; then
         rm -f "$CRAFT_PRIME/etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf"
       fi
+
+      # These have no effect in a Snap
+      rm -f $CRAFT_PRIME/usr/bin/aa-*
+      for CRUFT in X11 apparmor deviceinfo dbus-1 vulkan glvnd init.d sensorfw; do
+        rm -rf "$CRAFT_PRIME/etc/${CRUFT}"
+      done
+      rm -rf "$CRAFT_PRIME/lib"
+
+      # Usually found on an Ubuntu Touch host
+      rm -rf "$CRAFT_PRIME/usr/share/{apparmor,click,dbus-1,doc}"
+      rm -rf "$CRAFT_PRIME/usr/sbin"
+      rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/perl{5,-base}"
+      rm -rf "$CRAFT_PRIME/usr/lib/{udev,systemd}"
