@@ -55,24 +55,6 @@ if [ ! -z "$DESKTOP_FILE_HINT" ]; then
     export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 fi
 
-# Check for the existance of display server protocol connections
-# and only add those to the list which are allowed by the user
-# and are set up to find the respective socket.
-SUPPORTED_PLATFORMS=""
-if snapctl is-connected x11 2> /dev/null && \
-       test -e "$X11_SOCKET"; then
-   SUPPORTED_PLATFORMS="xcb;$SUPPORTED_PLATFORMS"
-fi
-if snapctl is-connected wayland 2> /dev/null && \
-       test -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"; then
-   SUPPORTED_PLATFORMS="wayland-egl;$SUPPORTED_PLATFORMS"
-fi
-if snapctl is-connected mir 2> /dev/null && \
-       test -e "$MIR_SOCKET"; then
-   SUPPORTED_PLATFORMS="ubuntumirclient;$SUPPORTED_PLATFORMS"
-fi
-export QT_QPA_PLATFORM="$SUPPORTED_PLATFORMS"
-
 # Find libraries, Qt plugins, QML modules, programs, fonts & icons
 # Generously include expected paths from the main app since those are expected
 # by Clickable apps which this intends to match in behavior as closely as possible.
@@ -108,6 +90,24 @@ export MIR_CLIENT_PLATFORM_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/mir1/cli
 export XDG_DATA_HOME="$SNAP_USER_DATA/.local/share"
 export XDG_CONFIG_HOME="$SNAP_USER_DATA/.config"
 export XDG_CACHE_HOME="$SNAP_USER_DATA/.cache"
+
+# Check for the existance of display server protocol connections
+# and only add those to the list which are allowed by the user
+# and are set up to find the respective socket.
+SUPPORTED_PLATFORMS=""
+if snapctl is-connected x11 2> /dev/null && \
+       test -e "$X11_SOCKET"; then
+   SUPPORTED_PLATFORMS="xcb;$SUPPORTED_PLATFORMS"
+fi
+if snapctl is-connected wayland 2> /dev/null && \
+       test -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"; then
+   SUPPORTED_PLATFORMS="wayland-egl;$SUPPORTED_PLATFORMS"
+fi
+if snapctl is-connected mir 2> /dev/null && \
+       test -e "$MIR_SOCKET"; then
+   SUPPORTED_PLATFORMS="ubuntumirclient;$SUPPORTED_PLATFORMS"
+fi
+export QT_QPA_PLATFORM="$SUPPORTED_PLATFORMS"
 
 # We ship UBports builds of Qt6 with runtime selection of OpenGL/ES
 if [ "$SNAP_ARCH" == "arm64" ] || [ "$SNAP_ARCH" == "armhf" ]; then

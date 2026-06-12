@@ -1,12 +1,12 @@
 name: lomiri-ui-toolkit-core24
-version: "1.0"
+version: "24.04-2.0"
 summary: A convergent UI toolkit for all formfactors
 description: |
   Lomiri UI Toolkit
 
   Lomiri UI Toolkit offers elements for graphical applications to make beautiful interfaces for your app.
 
-  It is built on top of Qt5 & QML and offers support for a wide variety of form factors.
+  It is built on top of Qt5, Qt6 & QML and offers support for a wide variety of form factors.
 
   Your app can:
 
@@ -188,6 +188,7 @@ parts:
         - qml-module-lomiri-thumbnailer
         - qml-module-mediascanner0.1
         - qml-module-usermetrics
+        - qml-module-qzxing
         - libqt5quickcontrols2-5
         - libqt5quicktemplates2-5
         - libqt5multimedia5
@@ -424,8 +425,20 @@ parts:
         rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/${CRUFT}*"
       done
 
+      # hybris-2404 provided libraries
+      # We can't clean up against hybris-2404 as mainline also links against libhybris
+      # right now. We can unify this once QtWebEngine runtime-loads libhybris instead.
+      rm -f "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/*_libhybris*.so*"
+      rm -f "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libhybris/*.so"
+
+      # Probably a relict from our custom Mesa build
+      rm -rf "$CRAFT_PRIME/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdrm_*.so*"
+
+      # Clear execstack to silence store complaints
       cd $CRAFT_PRIME/usr/lib
       find . -type f -name "*.so*" -exec execstack --clear-execstack {} \;
+
+      # We want emojis & other bitmaps
       if [ -f "$CRAFT_PRIME/etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf" ]; then
         rm -f "$CRAFT_PRIME/etc/fonts/conf.d/70-no-bitmaps-except-emoji.conf"
       fi
