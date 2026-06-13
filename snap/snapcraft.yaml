@@ -494,4 +494,4 @@ parts:
       rm -rf "$CRAFT_PRIME/usr/lib/{udev,systemd}"
 
       # Points to /run
-      rm -f "$CRAFT_PRIME/etc/pulse/client.conf.d/*-enable-autospawn.conf"
+      rm -f $CRAFT_PRIME/etc/pulse/client.conf.d/*-enable-autospawn.conf
