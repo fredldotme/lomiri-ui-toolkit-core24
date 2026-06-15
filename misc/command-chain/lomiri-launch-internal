@@ -142,12 +142,11 @@ export FONTCONFIG_PATH="$SNAP_DESKTOP_RUNTIME/etc/fonts"
 export FONTCONFIG_FILE="$SNAP_DESKTOP_RUNTIME/etc/fonts/fonts.conf"
 
 # QtWebEngine from UBports links libandroid-properties and libcamera from libhybris
-[ -z "$HYBRIS_LINKER_DIR" ] && \
+# so it must at least find a libhybris linker, even on mainline. On Halium devices
+# this and other environment variables are set by hybris-2404.
+if [ ! -d /android ]; then
     export HYBRIS_LINKER_DIR=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libhybris/linker
-[ -z "$HYBRIS_EGLPLATFORM_DIR" ] && \
-    export HYBRIS_EGLPLATFORM_DIR=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libhybris
-[ -z "$HYBRIS_VULKANPLATFORM_DIR" ] && \
-    export HYBRIS_VULKANPLATFORM_DIR=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libhybris
+fi
 
 mkdir -p $XDG_DATA_HOME
 mkdir -p $XDG_CONFIG_HOME
