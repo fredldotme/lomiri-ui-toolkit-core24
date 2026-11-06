@@ -11,8 +11,12 @@ default:
     entrypoint: [""]
 
 .arm64: &arm64
+  variables:
+    ARCH: "arm64"
 
 .amd64: &amd64
+  variables:
+    ARCH: "amd64"
 
 .snap:
   stage: build
@@ -23,7 +27,7 @@ default:
     - apt install -y cmake build-essential
     - snapcraft pack --verbose
   artifacts:
-    name: "Snap"
+    name: "Snap for $ARCH"
     paths:
       - '*.snap'
     when: on_success
