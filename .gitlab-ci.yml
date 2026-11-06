@@ -10,6 +10,10 @@ default:
     name: "ghcr.io/canonical/snapcraft:8_core24"
     entrypoint: [""]
 
+.arm64: &arm64
+
+.amd64: &amd64
+
 .snap:
   stage: build
   script:
