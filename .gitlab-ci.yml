@@ -23,15 +23,10 @@ default:
   script:
     - export PATH=/usr/libexec/snapcraft:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     - export SNAPCRAFT_BUILD_ENVIRONMENT=host
+    - export UBPORTS_GITLAB_CI=1
     - apt update
     - apt install -y cmake build-essential
-    - snapcraft pack --verbose
-  artifacts:
-    name: "Snap for $ARCH"
-    paths:
-      - '*.snap'
-    when: on_success
-    expire_in: 1 week
+    - snapcraft pack --verbose && echo "$ARCH CI build successful!"
 
 snap:arm64:
   <<: *arm64
