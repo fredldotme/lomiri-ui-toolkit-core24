@@ -49,29 +49,49 @@ X11_SOCKET=/tmp/.X11-unix/$(echo "$DISPLAY" | sed "s/^:/X/g")
 [ -z "$MIR_SOCKET" ] && MIR_SOCKET="/run/user/$(id -u)/mir_socket"
 export MIR_SOCKET
 
-# Tweaks for Lomiri and Ubuntu Touch
-if [ ! -z "$DESKTOP_FILE_HINT" ]; then
-    export QT_IM_MODULE=Maliit
-    export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+# Tweaks for Ubuntu Touch
+ID=$(source /etc/os-release && echo "$ID")
+VARIANT_ID=$(source /etc/os-release && echo "$VARIANT_ID")
+UBUNTU_CODENAME=$(source /etc/os-release && echo "$UBUNTU_CODENAME")
+
+# Ubuntu Touch 26.04 will use Wayland for OSK needs
+# Use the Maliit plugin below that
+if [ "$ID" = "ubuntu" ] && [ "$VARIANT_ID" = "touch" ]; then
+    [ "$UBUNTU_CODENAME" = "focal" ] || [ "$UBUNTU_CODENAME" = "noble" ] && \
+        export QT_IM_MODULE=Maliit
 fi
+
+# Use server-side decorations on Lomiri
+[ ! -z "$DESKTOP_FILE_HINT" ] && \
+    export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+# Select the right Qt version based on the app's requirements
+# Qt versions might trip over QML modules in the paths made for a
+# particular different version. So make the use of Qt6 optional
+# but first try to detect the libraries the binary is linked against.
+# Otherwise fall back to Qt5
+ldd "$1" 2>/dev/null | grep -q "libQt6Core\.so\..*" && LOMIRI_USE_QT6=true
+[ -z "$LOMIRI_USE_QT6" ] && LOMIRI_USE_QT6=false
 
 # Find libraries, Qt plugins, QML modules, programs, fonts & icons
 # Generously include expected paths from the main app since those are expected
 # by Clickable apps which this intends to match in behavior as closely as possible.
 export PATH=${SNAP}:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/bin:${SNAP_DESKTOP_RUNTIME}/usr/bin:${PATH}
 
-# Libraries (both Qt5 & Qt6)
+# Qt version-independent ibraries
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/pulseaudio:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/libproxy:${LD_LIBRARY_PATH}
 
 # Qt 5
-export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
-export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt5/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
-
-# Qt 6
-export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt6/plugins:${QT_PLUGIN_PATH}
-export QML_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt6/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt6/qml:${QML_IMPORT_PATH}
+if [ "$LOMIRI_USE_QT6" != "true" ]; then
+    export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/plugins:${QT_PLUGIN_PATH}
+    export QML2_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt5/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/qml:${QML2_IMPORT_PATH}
+# Qt6
+else
+    export QT_PLUGIN_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt6/plugins:${QT_PLUGIN_PATH}
+    export QML_IMPORT_PATH=${SNAP}/lib/${ARCH}:${SNAP}/usr/lib/${ARCH}/qt6/qml:${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt6/qml:${QML_IMPORT_PATH}
+fi
 
 # More XDG paths
 export XDG_DATA_DIRS=${SNAP_DESKTOP_RUNTIME}/usr/share:${XDG_DATA_DIRS}
@@ -124,7 +144,6 @@ export MEDIASCANNER_CACHEDIR=${SNAP_REAL_HOME}/.cache/mediascanner-2.0
 #   /usr/share/qt5:
 #     bind: $SNAP/lomiri-ui-toolkit/usr/share/qt5
 export QTWEBENGINE_DISABLE_SANDBOX=1
-[ -z "$LOMIRI_USE_QT6" ] && LOMIRI_USE_QT6=false
 [ "$LOMIRI_USE_QT6" != "true" ] && \
     export QTWEBENGINEPROCESS_PATH=${SNAP_DESKTOP_RUNTIME}/usr/lib/${ARCH}/qt5/libexec/QtWebEngineProcess
 [ "$LOMIRI_USE_QT6" == "true" ] && \
