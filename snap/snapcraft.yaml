@@ -454,6 +454,7 @@ parts:
     build-snaps: [ mesa-2404 ]
     override-prime: |
       set -ex
+      set +u
 
       # GitLab CI with Docker images has no way of fetching mesa-2404 easily
       # so avoid the cleanup step. We don't archive artifacts anyway.
